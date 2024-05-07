@@ -45,19 +45,9 @@ func TestClientRequestNewClienWithClientDns(t *testing.T) {
 }
 
 func TestClientRequestClientOption(t *testing.T) {
-	var opt ClientOption = func(c *Client) error {
-		WithClientPort(2222)
-		WithClientDns("webrtcsrvgcp.callbox.com.br")
-		return nil
-	}
-	c := &Client{}
-	rtp := &RtpEngine{
-		ip:          c.GetIP(),
-		port:        c.GetPort(),
-		dnsResolver: &net.Resolver{},
-		ngPort:      0,
-	}
-	client, err := NewClient(rtp, opt)
+	c := &RtpEngine{}
+	client, err := NewClient(c, WithClientPort(2222), WithClientDns("webrtcsrvgcp.callbox.com.br"))
 	require.Nil(t, err)
-	fmt.Println(client)
+	require.NotNil(t, client.RtpEngine)
+	fmt.Println("Func:", t.Name(), "Value:", client)
 }
