@@ -29,7 +29,7 @@ func TestClientRequestNewClientWithClientHostname(t *testing.T) {
 
 	require.Nil(t, err)
 	require.NotNil(t, rtp.ip)
-	fmt.Println("Func:", t.Name(), "Value:", rtp.ip)
+	fmt.Println("Func:", t.Name(), "Value:", rtp.ip, "PASS")
 }
 
 func TestClientRequestNewClienWithClientDns(t *testing.T) {
@@ -41,7 +41,7 @@ func TestClientRequestNewClienWithClientDns(t *testing.T) {
 
 	require.Nil(t, err)
 	require.NotNil(t, rtp.url)
-	fmt.Println("Func:", t.Name(), "Value:", rtp.url)
+	fmt.Println("Func:", t.Name(), "Value:", rtp.url, "PASS")
 }
 
 func TestClientRequestClientOption(t *testing.T) {
@@ -49,5 +49,5 @@ func TestClientRequestClientOption(t *testing.T) {
 	client, err := NewClient(c, WithClientPort(2222), WithClientDns("webrtcsrvgcp.callbox.com.br"))
 	require.Nil(t, err)
 	require.NotNil(t, client.RtpEngine)
-	fmt.Println("Func:", t.Name(), "Value:", client)
+	fmt.Println("Func:", t.Name(), "Value:", client, "PASS")
 }
