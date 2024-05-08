@@ -1,20 +1,35 @@
-package gortpengine
+package rtpengine
 
-import "net"
+import (
+	"net"
+)
 
-type RtpEngine struct {
-	ip          net.IP
-	port        int
-	dnsResolver *net.Resolver
-	ngPort      int
+type Engine struct {
+	ip    net.IP
+	port  int
+	dns   *net.Resolver
+	proto string
+	ng    int
 }
 
-type RtpEngineOption func(s *RtpEngine) error
+type RtpEngineOption func(s *Engine) error
 
-func (r *RtpEngine) GetIP() net.IP {
+// Atribuir o ip padrão para conexão
+func (r *Engine) GetIP() net.IP {
 	return r.ip
 }
 
-func (r *RtpEngine) GetPort() int {
+// Atribuir a porta padrão para conexão
+func (r *Engine) GetPort() int {
 	return r.port
+}
+
+// Atribuir o protocolo padrão para conexão
+func (r *Engine) GetProto() string {
+	return r.proto
+}
+
+// Atribuir a porta padrão NG porta de controler
+func (r *Engine) GetNG() int {
+	return r.ng
 }
