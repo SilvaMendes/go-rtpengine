@@ -3,7 +3,9 @@ module github.com/SilvaMendes/go-rtpengine
 go 1.22.1
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/rs/zerolog v1.32.0
+	github.com/stefanovazzocell/bencode v0.0.0-20230603075053-a0f8ea55e036
 	github.com/stretchr/testify v1.8.1
 )
 
