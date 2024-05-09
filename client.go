@@ -13,34 +13,6 @@ import (
 	"github.com/stefanovazzocell/bencode"
 )
 
-// O dicionário de cada solicitação
-const (
-	Ping             = "ping"
-	Offer            = "offer"
-	Answer           = "answer"
-	Delete           = "delete"
-	Query            = "query"
-	StartRecording   = "start recording"
-	StopRecording    = "stop recording"
-	PauseRecording   = "pause recording"
-	BlockDTMF        = "block DTMF"
-	UnblockDTMF      = "unblock DTMF"
-	BlockMedia       = "block media"
-	UnblockMedia     = "unblock media"
-	SilenceMedia     = "silence media"
-	UnsilenceMedia   = "unsilence media"
-	StartForwarding  = "start forwarding"
-	StopForwarding   = "stop forwarding"
-	PlayMedia        = "play media"
-	StopMedia        = "stop media"
-	PlayDTMF         = "play DTMF"
-	Statistics       = "statistics"
-	Publish          = "publish"
-	SubscribeRequest = "subscribe request"
-	SubscribeAnswer  = "subscribe answer"
-	Unsubscribe      = "unsubscribe"
-)
-
 type Client struct {
 	*Engine
 	url     string

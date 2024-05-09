@@ -77,7 +77,7 @@ func TestClientRequestClientPing(t *testing.T) {
 		require.Nil(t, err)
 		require.NotNil(t, client.Engine.con)
 
-		req, err := client.Comando(Ping)
+		req, err := client.Comando(string(Ping))
 		require.Nil(t, err)
 		require.NotNil(t, req)
 
