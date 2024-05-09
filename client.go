@@ -1,16 +1,12 @@
 package rtpengine
 
 import (
-	"bytes"
 	"context"
-	"errors"
-	"fmt"
 	"net"
 	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/stefanovazzocell/bencode"
 )
 
 type Client struct {
@@ -110,97 +106,46 @@ func (s *Client) Close() error {
 	return s.con.Close()
 }
 
-func (c *Client) Comando(comando string) (map[string]interface{}, error) {
+func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 	cookie := c.GetCookie()
-	err := c.enviaComando(cookie, comando)
+	err := c.ComnadoNG(cookie, comando)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	decodedMsg, err := c.retornaResposta(cookie)
+	Resposta, err := c.RespostaNG(cookie)
+
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	return decodedMsg, nil
+	return Resposta
 }
 
-func (c *Client) enviaComando(cookie string, command string) error {
-	message, err := encodeCommand(cookie, command)
+// Comando NG formatado em bencode para rtpengine
+func (c *Client) ComnadoNG(cookie string, comando *RequestRtp) error {
+	menssagem, err := EncodeComando(cookie, comando)
 	if err != nil {
 		return err
 	}
-	c.log.Debug().Msg("cookie: " + cookie + " Comando: " + command)
-	if _, err := c.con.Write(message); err != nil {
+
+	c.log.Debug().Msg("cookie: " + cookie + " Comando: " + comando.Command)
+
+	if _, err := c.con.Write(menssagem); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) retornaResposta(cookie string) (map[string]interface{}, error) {
+// Resposta do servidor ngcp-rtpengine
+func (c *Client) RespostaNG(cookie string) (*ResponseRtp, error) {
 	c.con.SetReadDeadline(time.Now().Add(c.timeout))
-	response := make([]byte, 65536)
-	_, err := c.con.Read(response)
+	respostaRaw := make([]byte, 65536)
+
+	_, err := c.con.Read(respostaRaw)
 	if err != nil {
 		return nil, err
 	}
 
-	decodedMsg, err := decodeResponse(cookie, response)
-
-	if err != nil {
-		return nil, err
-	}
-	c.log.Debug().Msg("Cookie: " + cookie + " Resposta: " + fmt.Sprint(decodedMsg["result"]))
-
-	return c.validateResponse(decodedMsg)
-}
-
-func (c *Client) validateResponse(decodedMsg map[string]interface{}) (map[string]interface{}, error) {
-	result, ok := decodedMsg["result"]
-	if !ok {
-		return nil, errors.New("Sem retorno do Result")
-	}
-	if result == "ok" || result == "pong" {
-		if err, ok := decodedMsg["warning"]; ok {
-			fmt.Println(err)
-			c.log.Warn().Msg("Error")
-		}
-		return decodedMsg, nil
-	}
-	if result == "error" {
-		if reason, ok := decodedMsg["error-reason"]; ok {
-			return nil, errors.New(reason.(string))
-		}
-	}
-	return nil, errors.New("Error Desconhecido")
-}
-
-func decodeResponse(cookie string, response []byte) (map[string]interface{}, error) {
-	cookieIndex := bytes.IndexAny(response, " ")
-	if cookieIndex != len(cookie) {
-		return nil, errors.New(" Erro ao analisar a mensagem")
-	}
-
-	cookieResponse := string(response[:cookieIndex])
-	if cookieResponse != cookie {
-		return nil, errors.New("O cookie não corresponde")
-	}
-
-	encodedData := string(response[cookieIndex+1:])
-	decodedData, err := bencode.NewParserFromString(encodedData).AsDict()
-	if err != nil {
-		return nil, err
-	}
-	return decodedData, nil
-}
-
-func encodeCommand(cookie string, command string) ([]byte, error) {
-	var dict interface{} = map[string]interface{}{
-		"command": command,
-	}
-	bdata, err := bencode.NewEncoderFromInterface(dict)
-	if err != nil {
-		return nil, err
-	}
-	bid := []byte(cookie + " ")
-	return append(bid, bdata.Bytes()...), nil
+	resposta := DecodeResposta(cookie, respostaRaw)
+	return resposta, nil
 }

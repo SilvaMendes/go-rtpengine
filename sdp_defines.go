@@ -1,5 +1,11 @@
 package rtpengine
 
+import (
+	"bytes"
+
+	bencode "github.com/anacrolix/torrent/bencode"
+)
+
 // Definição do Protocolo de Transporte do SDP
 type TransportProtocol string
 
@@ -65,12 +71,22 @@ const (
 
 // Estrutura da requisicão do comando
 type RequestRtp struct {
-	Command struct{} `json:"command" bencode:"command"`
+	Command string `json:"command" bencode:"command"`
+	*ParamsOptString
+	*ParamsFlags
+	*ParamsOptInt
+	*ParamsOptStringArray
+	*ParamsOptCodec
+	*ParamsOptReplace
+	*ParamsSdpAttrSections
+	*ParamsSdpAttrCommands
 }
 
 // Estrutura da resposta do comando
 type ResponseRtp struct {
-	Result struct{} `json:"result" bencode:"result"`
+	Result      string `json:"result" bencode:"result"`
+	Sdp         string `json:"sdp" bencode:"sdp"`
+	ErrorReason string `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
 }
 
 // Parametros usado como passagem de flags
@@ -224,4 +240,42 @@ type ParamsSdpAttrSections struct {
 type ParamsSdpAttrCommands struct {
 	Add    string `json:"add,omitempty" bencode:"add,omitempty"`
 	Remove string `json:"remove,omitempty" bencode:"remove,omitempty"`
+}
+
+// Trasformar o comando em bencode
+func EncodeComando(cookie string, command *RequestRtp) ([]byte, error) {
+	data, err := bencode.Marshal(command)
+	if err != nil {
+		return nil, err
+	}
+
+	bind := []byte(cookie + " ")
+	return append(bind, data...), nil
+}
+
+func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
+	resp := &ResponseRtp{}
+	cookieIndex := bytes.IndexAny(resposta, " ")
+	if cookieIndex != len(cookie) {
+		resp.Result = "error"
+		resp.ErrorReason = "Erro ao analisar a mensagem"
+		return resp
+	}
+
+	cookieResponse := string(resposta[:cookieIndex])
+	if cookieResponse != cookie {
+		resp.Result = "error"
+		resp.ErrorReason = "O cookie não corresponde"
+		return resp
+	}
+
+	encodedData := string(resposta[cookieIndex+1:])
+
+	err := bencode.Unmarshal([]byte(encodedData), resp)
+
+	if err != nil {
+		return resp
+	}
+
+	return resp
 }

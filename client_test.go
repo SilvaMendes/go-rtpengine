@@ -76,12 +76,49 @@ func TestClientRequestClientPing(t *testing.T) {
 		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
 		require.Nil(t, err)
 		require.NotNil(t, client.Engine.con)
+		r := &RequestRtp{
+			Command: string(Ping),
+		}
+		response := client.NewComando(r)
+		require.NotNil(t, response)
 
-		req, err := client.Comando(string(Ping))
-		require.Nil(t, err)
-		require.NotNil(t, req)
-
-		fmt.Println("Func:", t.Name(), "Request:"+Ping, "Result:"+fmt.Sprint(req["result"]), client.con.RemoteAddr().String(), "PASS")
+		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
 		c.con.Close()
 	})
+}
+
+func TestClientRequestComando(t *testing.T) {
+	sdp := `v=0
+o=- 1545997027 1 IN IP4 198.51.100.1
+s=tester
+t=0 0
+m=audio 2000 RTP/AVP 0
+c=IN IP4 198.51.100.1
+a=sendrecv`
+
+	t.Run("TestComandoOffer", func(t *testing.T) {
+		c := &Engine{}
+		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		require.Nil(t, err)
+
+		r := &RequestRtp{
+			Command: string(Offer),
+			ParamsOptString: &ParamsOptString{
+				FromTag:           "asdasdasd494894",
+				ToTag:             "asdasdad7879",
+				CallId:            "5464asdas",
+				TransportProtocol: string(RTP_AVP),
+				Sdp:               sdp,
+			},
+			ParamsOptReplace: &ParamsOptReplace{
+				Username:    "cbx-teste",
+				SessionName: "cbx-teste",
+			},
+		}
+		response := client.NewComando(r)
+		require.NotNil(t, response)
+		fmt.Println(response.Sdp)
+		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+	})
+
 }
