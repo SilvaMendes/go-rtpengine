@@ -1,10 +1,6 @@
 package rtpengine
 
-import (
-	"bytes"
-
-	bencode "github.com/anacrolix/torrent/bencode"
-)
+import "fmt"
 
 // Definição do Protocolo de Transporte do SDP
 type TransportProtocol string
@@ -17,6 +13,15 @@ type TipoComandos string
 type DtlsHash string
 
 type CryptoSuite string
+
+// Tipo de parametros para o replace
+type ParamReplace string
+
+// Tipo de parametros usado como flags
+type ParamFlags string
+
+// Tipo de parametros usado no rtcp-mux
+type ParamRTCPMux string
 
 const (
 	Ping                          TipoComandos      = "ping"
@@ -67,71 +72,94 @@ const (
 	SRTP_F8_128_HMAC_SHA1_32      CryptoSuite       = "F8_128_HMAC_SHA1_32"
 	SRTP_NULL_HMAC_SHA1_80        CryptoSuite       = "NULL_HMAC_SHA1_80"
 	SRTP_NULL_HMAC_SHA1_32        CryptoSuite       = "NULL_HMAC_SHA1_32"
+	Origin                        ParamReplace      = "origin"
+	SessionConnection             ParamReplace      = "session-connection"
+	SdpVersion                    ParamReplace      = "sdp-version"
+	Username                      ParamReplace      = "username"
+	SessionName                   ParamReplace      = "session-name"
+	ZeroAddress                   ParamReplace      = "zero-address"
+	ForceIncrementSdpVersion      ParamReplace      = "force-increment-sdp-version"
+	TrustAddress                  ParamFlags        = "trust-address"
+	Symmetric                     ParamFlags        = "symmetric"
+	Asymmetric                    ParamFlags        = "asymmetric"
+	Unidirectional                ParamFlags        = "unidirectional"
+	Force                         ParamFlags        = "force"
+	StrictSource                  ParamFlags        = "strict-source"
+	MediaHandover                 ParamFlags        = "media-handover"
+	SipSourceAddress              ParamFlags        = "sip-source-address"
+	Reset                         ParamFlags        = "reset"
+	PortLatching                  ParamFlags        = "port-latching"
+	NoRtcpAttribute               ParamFlags        = "no-rtcp-attribute"
+	FullRtcpAttribute             ParamFlags        = "full-rtcp-attribute"
+	LoopProtect                   ParamFlags        = "loop-protect"
+	RecordCall                    ParamFlags        = "record-call"
+	AlwaysTranscode               ParamFlags        = "always-transcode"
+	SIPREC                        ParamFlags        = "SIPREC"
+	PadCrypto                     ParamFlags        = "pad-crypto"
+	GenerateMid                   ParamFlags        = "generate-mid"
+	Fragment                      ParamFlags        = "fragment"
+	OriginalSendrecv              ParamFlags        = "original-sendrecv"
+	SymmetricCodecs               ParamFlags        = "symmetric-codecs"
+	AsymmetricCodecs              ParamFlags        = "asymmetric-codecs"
+	InjectDTMF                    ParamFlags        = "inject-DTMF"
+	DetectDTMF                    ParamFlags        = "detect-DTMF"
+	GenerateRTCP                  ParamFlags        = "generate-RTCP"
+	SingleCodec                   ParamFlags        = "single-codec"
+	NoCodecRenegotiation          ParamFlags        = "no-codec-renegotiation"
+	PierceNAT                     ParamFlags        = "pierce-NAT"
+	SIPSourceAddress              ParamFlags        = "SIP-source-address"
+	AllowTranscoding              ParamFlags        = "allow-transcoding"
+	TrickleICE                    ParamFlags        = "trickle-ICE"
+	RejectICE                     ParamFlags        = "reject-ICE"
+	Egress                        ParamFlags        = "egress"
+	NoJitterBuffer                ParamFlags        = "no-jitter-buffer"
+	Passthrough                   ParamFlags        = "passthrough"
+	NoPassthrough                 ParamFlags        = "no-passthrough"
+	Pause                         ParamFlags        = "pause"
+	EarlyMedia                    ParamFlags        = "early-media"
+	BlockShort                    ParamFlags        = "block-short"
+	RecordingVsc                  ParamFlags        = "recording-vsc"
+	BlockEgress                   ParamFlags        = "block-egress"
+	RTCP_Offer                    ParamRTCPMux      = "offer"
+	RTCP_Require                  ParamRTCPMux      = "require"
+	RTCP_Demux                    ParamRTCPMux      = "demux"
+	RTCP_Accept                   ParamRTCPMux      = "accept"
+	RTCP_Reject                   ParamRTCPMux      = "reject"
 )
 
 // Estrutura da requisicão do comando
 type RequestRtp struct {
 	Command string `json:"command" bencode:"command"`
 	*ParamsOptString
-	*ParamsFlags
 	*ParamsOptInt
 	*ParamsOptStringArray
 	*ParamsOptCodec
-	*ParamsOptReplace
 	*ParamsSdpAttrSections
 	*ParamsSdpAttrCommands
 }
 
 // Estrutura da resposta do comando
 type ResponseRtp struct {
-	Result      string `json:"result" bencode:"result"`
-	Sdp         string `json:"sdp" bencode:"sdp"`
-	ErrorReason string `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
+	Result      string      `json:"result" bencode:"result"`
+	Sdp         string      `json:"sdp,omitempty" bencode:"sdp,omitempty"`
+	ErrorReason string      `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
+	Warning     string      `json:"warning,omitempty" bencode:"warning,omitempty"`
+	Created     int         `json:"created,omitempty" bencode:"created,omitempty"`
+	CreatedUs   int         `json:"created_us,omitempty" bencode:"created_us,omitempty"`
+	LastSignal  int         `json:"last signal,omitempty" bencode:"last signal,omitempty"`
+	SSRC        interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
+	Tags        interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
+	Totals      TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
 }
 
-// Parametros usado como passagem de flags
-type ParamsFlags struct {
-	TrustAddress         string `json:"trust-address,omitempty" bencode:"trust-address,omitempty"`
-	Symmetric            string `json:"symmetric,omitempty" bencode:"symmetric,omitempty"`
-	Asymmetric           string `json:"asymmetric,omitempty" bencode:"asymmetric,omitempty"`
-	Unidirectional       string `json:"unidirectional,omitempty" bencode:"asymmetric,omitempty"`
-	Force                string `json:"force,omitempty" bencode:"force,omitempty"`
-	StrictSource         string `json:"strict-source,omitempty" bencode:"strict-source,omitempty"`
-	MediaHandover        string `json:"media-handover,omitempty" bencode:"media-handover,omitempty"`
-	SipSourceAddress     string `json:"sip-source-address,omitempty" bencode:"sip-source-address,omitempty"`
-	Reset                string `json:"reset,omitempty" bencode:"reset,omitempty"`
-	PortLatching         string `json:"port-latching,omitempty" bencode:"port-latching,omitempty"`
-	NoRtcpAttribute      string `json:"no-rtcp-attribute,omitempty" bencode:"no-rtcp-attribute,omitempty" `
-	FullRtcpAttribute    string `json:"full-rtcp-attribute,omitempty" bencode:"full-rtcp-attribute,omitempty"`
-	LoopProtect          string `json:"loop-protect,omitempty" bencode:"loop-protect,omitempty"`
-	RecordCall           string `json:"record-call,omitempty" bencode:"record-call,omitempty"`
-	AlwaysTranscode      string `json:"always-transcode,omitempty" bencode:"always-transcode,omitempty"`
-	SIPREC               string `json:"SIPREC,omitempty" bencode:"SIPREC,omitempty"`
-	PadCrypto            string `json:"pad-crypto,omitempty" bencode:"pad-crypto,omitempty"`
-	GenerateMid          string `json:"generate-mid,omitempty" bencode:"generate-mid,omitempty"`
-	Fragment             string `json:"fragment,omitempty" bencode:"fragment,omitempty"`
-	OriginalSendrecv     string `json:"original-sendrecv,omitempty" bencode:"original-sendrecv,omitempty"`
-	SymmetricCodecs      string `json:"symmetric-codecs,omitempty" bencode:"symmetric-codecs,omitempty"`
-	AsymmetricCodecs     string `json:"asymmetric-codecs,omitempty" bencode:"asymmetric-codecs,omitempty"`
-	InjectDTMF           string `json:"inject-DTMF,omitempty" bencode:"asymmetric-codecs,omitempty"`
-	DetectDTMF           string `json:"detect-DTMF,omitempty" bencode:"detect-DTMF,omitempty"`
-	GenerateRTCP         string `json:"generate-RTCP,omitempty" bencode:"generate-RTCP,omitempty"`
-	SingleCodec          string `json:"single-codec,omitempty" bencode:"single-codec,omitempty"`
-	NoCodecRenegotiation string `json:"no-codec-renegotiation,omitempty" bencode:"no-codec-renegotiation,omitempty"`
-	PierceNAT            string `json:"pierce-NAT,omitempty" bencode:"pierce-NAT,omitempty"`
-	SIPSourceAddress     string `json:"SIP-source-address,omitempty" bencode:"SIP-source-address,omitempty"`
-	AllowTranscoding     string `json:"allow-transcoding,omitempty" bencode:"allow-transcoding,omitempty"`
-	TrickleICE           string `json:"trickle-ICE,omitempty" bencode:"trickle-ICE,omitempty"`
-	RejectICE            string `json:"reject-ICE,omitempty" bencode:"reject-ICE,omitempty"`
-	Egress               string `json:"egress,omitempty" bencode:"egress,omitempty"`
-	NoJitterBuffer       string `json:"no-jitter-buffer,omitempty" bencode:"no-jitter-buffer,omitempty"`
-	Passthrough          string `json:"passthrough,omitempty" bencode:"passthrough,omitempty"`
-	NoPassthrough        string `json:"no-passthrough,omitempty" bencode:"no-passthrough,omitempty"`
-	Pause                string `json:"pause,omitempty" bencode:"pause,omitempty" `
-	EarlyMedia           string `json:"early-media,omitempty" bencode:"early-media,omitempty"`
-	BlockShort           string `json:"block-short,omitempty" bencode:"block-short,omitempty"`
-	RecordingVsc         string `json:"recording-vsc,omitempty" bencode:"recording-vsc,omitempty"`
-	BlockEgress          string `json:"block-egress,omitempty" bencode:"block-egress,omitempty"`
+type TotalRTP struct {
+	Rtp  ValuesRTP `json:"RTP,omitempty" bencode:"RTP,omitempty"`
+	Rtcp ValuesRTP `json:"RCTP,omitempty" bencode:"RTP,omitempty"`
+}
+type ValuesRTP struct {
+	Packets int `json:"packets,omitempty" bencode:"packets,omitempty"`
+	Bytes   int `json:"bytes,omitempty" bencode:"bytes,omitempty"`
+	Errors  int `json:"errors,omitempty" bencode:"errors,omitempty"`
 }
 
 // Parametros de comportamento
@@ -195,15 +223,16 @@ type ParamsOptInt struct {
 
 // Parametros de comportamento tipo array separado por ','
 type ParamsOptStringArray struct {
-	Flags        []string `json:"flags,omitempty" bencode:"flags,omitempty"`
-	RtcpMux      []string `json:"rtcp-mux,omitempty" bencode:"rtcp-mux,omitempty"`
-	SDES         []string `json:"SDES,omitempty" bencode:"SDES,omitempty"`
-	Supports     []string `json:"supports,omitempty" bencode:"supports,omitempty"`
-	T38          []string `json:"T38,omitempty" bencode:"T38,omitempty"`
-	OSRTP        []string `json:"OSRTP,omitempty" bencode:"OSRTP,omitempty"`
-	ReceivedFrom []string `json:"received-from,omitempty" bencode:"received-from,omitempty"`
-	FromTags     []string `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
-	Frequencies  []string `json:"frequencies,omitempty" bencode:"frequencies,omitempty"`
+	Flags        []string       `json:"flags,omitempty" bencode:"flags,omitempty"`
+	RtcpMux      []ParamRTCPMux `json:"rtcp-mux,omitempty" bencode:"rtcp-mux,omitempty"`
+	SDES         []string       `json:"SDES,omitempty" bencode:"SDES,omitempty"`
+	Supports     []string       `json:"supports,omitempty" bencode:"supports,omitempty"`
+	T38          []string       `json:"T38,omitempty" bencode:"T38,omitempty"`
+	OSRTP        []string       `json:"OSRTP,omitempty" bencode:"OSRTP,omitempty"`
+	ReceivedFrom []string       `json:"received-from,omitempty" bencode:"received-from,omitempty"`
+	FromTags     []string       `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
+	Frequencies  []string       `json:"frequencies,omitempty" bencode:"frequencies,omitempty"`
+	Replace      []ParamReplace `json:"replace,omitempty" bencode:"replace,omitempty"`
 }
 
 // Parametros de manipulação dos codecs na oferta
@@ -216,17 +245,6 @@ type ParamsOptCodec struct {
 	Consume   string `json:"consume,omitempty" bencode:"consume,omitempty"`
 	Accept    string `json:"accept,omitempty" bencode:"accept,omitempty"`
 	Except    string `json:"except,omitempty" bencode:"except,omitempty"`
-}
-
-// Parametros de substituição de valores no corpo do SDP
-type ParamsOptReplace struct {
-	Origin                   string `json:"origin,omitempty" bencode:"origin,omitempty"`
-	SessionConnection        string `json:"session-connection,omitempty" bencode:"session-connection,omitempty"`
-	SdpVersion               string `json:"sdp-version,omitempty" bencode:"sdp-version,omitempty"`
-	Username                 string `json:"username,omitempty" bencode:"username,omitempty"`
-	SessionName              string `json:"session-name,omitempty" bencode:"session-name,omitempty"`
-	ZeroAddress              string `json:"zero-address,omitempty" bencode:"zero-address,omitempty"`
-	ForceIncrementSdpVersion string `json:"force-increment-sdp-version,omitempty" bencode:"force-increment-sdp-version,omitempty"`
 }
 
 // Parametros de manipulação de sessão
@@ -242,40 +260,60 @@ type ParamsSdpAttrCommands struct {
 	Remove string `json:"remove,omitempty" bencode:"remove,omitempty"`
 }
 
-// Trasformar o comando em bencode
-func EncodeComando(cookie string, command *RequestRtp) ([]byte, error) {
-	data, err := bencode.Marshal(command)
-	if err != nil {
-		return nil, err
+type ParametrosOption func(c *RequestRtp) error
+
+func SDPOffering(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
+	request := &RequestRtp{
+		Command:               fmt.Sprint(Offer),
+		ParamsOptString:       parametros,
+		ParamsOptInt:          &ParamsOptInt{},
+		ParamsOptStringArray:  &ParamsOptStringArray{},
+		ParamsOptCodec:        &ParamsOptCodec{},
+		ParamsSdpAttrSections: &ParamsSdpAttrSections{},
+		ParamsSdpAttrCommands: &ParamsSdpAttrCommands{},
 	}
 
-	bind := []byte(cookie + " ")
-	return append(bind, data...), nil
+	for _, o := range options {
+		if err := o(request); err != nil {
+			return nil, err
+		}
+	}
+	return request, nil
 }
 
-func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
-	resp := &ResponseRtp{}
-	cookieIndex := bytes.IndexAny(resposta, " ")
-	if cookieIndex != len(cookie) {
-		resp.Result = "error"
-		resp.ErrorReason = "Erro ao analisar a mensagem"
-		return resp
+func SDPAnswer(parametros *ParamsOptString, options ...*ParamsOptStringArray) (string error) {
+	return nil
+}
+
+func SDPDelete(parametros *ParamsOptString) (string error) {
+	return nil
+}
+
+// Adcionar um lista de flags para rtpengine
+func (c *RequestRtp) SetFlags(flags []string) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, flags...)
+		return nil
 	}
+}
 
-	cookieResponse := string(resposta[:cookieIndex])
-	if cookieResponse != cookie {
-		resp.Result = "error"
-		resp.ErrorReason = "O cookie não corresponde"
-		return resp
+func (c *RequestRtp) SetTransportProtocol(proto TransportProtocol) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.TransportProtocol = string(proto)
+		return nil
 	}
+}
 
-	encodedData := string(resposta[cookieIndex+1:])
-
-	err := bencode.Unmarshal([]byte(encodedData), resp)
-
-	if err != nil {
-		return resp
+func (c *RequestRtp) SetReplace(replace []ParamReplace) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.Replace = replace
+		return nil
 	}
+}
 
-	return resp
+func (c *RequestRtp) SetRtcpMux(rtcpmux []ParamRTCPMux) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.RtcpMux = rtcpmux
+		return nil
+	}
 }

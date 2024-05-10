@@ -1,9 +1,11 @@
 package rtpengine
 
 import (
+	"bytes"
 	"fmt"
 	"net"
 
+	bencode "github.com/anacrolix/torrent/bencode"
 	"github.com/google/uuid"
 )
 
@@ -52,4 +54,41 @@ func (r *Engine) Conn() (net.Conn, error) {
 	r.con = conn
 	return r.con, nil
 
+}
+
+// Trasformar o comando em bencode
+func EncodeComando(cookie string, command *RequestRtp) ([]byte, error) {
+	data, err := bencode.Marshal(command)
+	if err != nil {
+		return nil, err
+	}
+
+	bind := []byte(cookie + " ")
+	return append(bind, data...), nil
+}
+
+func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
+	resp := &ResponseRtp{}
+	cookieIndex := bytes.IndexAny(resposta, " ")
+	if cookieIndex != len(cookie) {
+		resp.Result = "error"
+		resp.ErrorReason = "Erro ao analisar a mensagem"
+		return resp
+	}
+
+	cookieResponse := string(resposta[:cookieIndex])
+	if cookieResponse != cookie {
+		resp.Result = "error"
+		resp.ErrorReason = "O cookie não corresponde"
+		return resp
+	}
+
+	encodedData := string(resposta[cookieIndex+1:])
+	err := bencode.Unmarshal([]byte(encodedData), resp)
+
+	if err != nil {
+		return resp
+	}
+
+	return resp
 }
