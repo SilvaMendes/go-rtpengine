@@ -195,15 +195,15 @@ type ParamsOptInt struct {
 
 // Parametros de comportamento tipo array separado por ','
 type ParamsOptStringArray struct {
-	Flags        string `json:"flags,omitempty" bencode:"flags,omitempty"`
-	RtcpMux      string `json:"rtcp-mux,omitempty" bencode:"rtcp-mux,omitempty"`
-	SDES         string `json:"SDES,omitempty" bencode:"SDES,omitempty"`
-	Supports     string `json:"supports,omitempty" bencode:"supports,omitempty"`
-	T38          string `json:"T38,omitempty" bencode:"T38,omitempty"`
-	OSRTP        string `json:"OSRTP,omitempty" bencode:"OSRTP,omitempty"`
-	ReceivedFrom string `json:"received-from,omitempty" bencode:"received-from,omitempty"`
-	FromTags     string `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
-	Frequencies  string `json:"frequencies,omitempty" bencode:"frequencies,omitempty"`
+	Flags        []string `json:"flags,omitempty" bencode:"flags,omitempty"`
+	RtcpMux      []string `json:"rtcp-mux,omitempty" bencode:"rtcp-mux,omitempty"`
+	SDES         []string `json:"SDES,omitempty" bencode:"SDES,omitempty"`
+	Supports     []string `json:"supports,omitempty" bencode:"supports,omitempty"`
+	T38          []string `json:"T38,omitempty" bencode:"T38,omitempty"`
+	OSRTP        []string `json:"OSRTP,omitempty" bencode:"OSRTP,omitempty"`
+	ReceivedFrom []string `json:"received-from,omitempty" bencode:"received-from,omitempty"`
+	FromTags     []string `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
+	Frequencies  []string `json:"frequencies,omitempty" bencode:"frequencies,omitempty"`
 }
 
 // Parametros de manipulação dos codecs na oferta

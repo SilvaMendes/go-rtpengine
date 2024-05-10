@@ -108,7 +108,7 @@ func (s *Client) Close() error {
 
 func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 	cookie := c.GetCookie()
-	err := c.ComnadoNG(cookie, comando)
+	err := c.ComandoNG(cookie, comando)
 	if err != nil {
 		return nil
 	}
@@ -122,7 +122,7 @@ func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 }
 
 // Comando NG formatado em bencode para rtpengine
-func (c *Client) ComnadoNG(cookie string, comando *RequestRtp) error {
+func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 	menssagem, err := EncodeComando(cookie, comando)
 	if err != nil {
 		return err
