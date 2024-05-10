@@ -6,7 +6,6 @@ require (
 	github.com/anacrolix/torrent v1.55.0
 	github.com/google/uuid v1.6.0
 	github.com/rs/zerolog v1.32.0
-	github.com/stefanovazzocell/bencode v0.0.0-20230603075053-a0f8ea55e036
 	github.com/stretchr/testify v1.8.1
 )
 
@@ -14,7 +13,6 @@ require (
 	github.com/anacrolix/missinggo v1.3.0 // indirect
 	github.com/anacrolix/missinggo/v2 v2.7.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/fatih/structs v1.1.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
