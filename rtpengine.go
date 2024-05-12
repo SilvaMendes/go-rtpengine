@@ -39,8 +39,14 @@ type ParamFlags string
 // Tipo de parametros usado no rtcp-mux
 type ParamRTCPMux string
 
-// Tipo de codec para transcoder
-type TranscoderCodec string
+//// Tipo de codec para transcoder
+//type TranscoderCodec string
+
+//// Tipo de Mask para remover codec
+//type MaskCodec string
+
+// Tipo de codecs
+type Codecs string
 
 const (
 	Ping                          TipoComandos      = "ping"
@@ -144,15 +150,15 @@ const (
 	RTCP_Demux                    ParamRTCPMux      = "demux"
 	RTCP_Accept                   ParamRTCPMux      = "accept"
 	RTCP_Reject                   ParamRTCPMux      = "reject"
-	CODEC_PCMU                    TranscoderCodec   = "transcode=PCMU"
-	CODEC_PCMA                    TranscoderCodec   = "transcode=PCMA"
-	CODEC_G729                    TranscoderCodec   = "transcode=G729"
-	CODEC_G729a                   TranscoderCodec   = "transcode=G729a"
-	CODEC_OPUS                    TranscoderCodec   = "transcode=opus"
-	CODEC_G722                    TranscoderCodec   = "transcode=G722"
-	CODEC_G723                    TranscoderCodec   = "transcode=G723"
-	CODEC_ILBC                    TranscoderCodec   = "transcode=iLBC"
-	CODEC_SPEEX                   TranscoderCodec   = "transcode=speex"
+	CODEC_PCMU                    Codecs            = "PCMU"
+	CODEC_PCMA                    Codecs            = "PCMA"
+	CODEC_G729                    Codecs            = "G729"
+	CODEC_G729a                   Codecs            = "G729a"
+	CODEC_OPUS                    Codecs            = "opus"
+	CODEC_G722                    Codecs            = "G722"
+	CODEC_G723                    Codecs            = "G723"
+	CODEC_ILBC                    Codecs            = "iLBC"
+	CODEC_SPEEX                   Codecs            = "speex"
 )
 
 // Estrutura da requisicão do comando
@@ -161,7 +167,7 @@ type RequestRtp struct {
 	*ParamsOptString
 	*ParamsOptInt
 	*ParamsOptStringArray
-	*ParamsOptCodec
+	//*ParamsOptCodec
 	*ParamsSdpAttrSections
 	*ParamsSdpAttrCommands
 }
@@ -263,17 +269,17 @@ type ParamsOptStringArray struct {
 	Replace      []ParamReplace `json:"replace,omitempty" bencode:"replace,omitempty"`
 }
 
-// Parametros de manipulação dos codecs na oferta
-type ParamsOptCodec struct {
-	Strip     string            `json:"strip,omitempty" bencode:"strip,omitempty"`
-	Offer     string            `json:"offer,omitempty" bencode:"offer,omitempty"`
-	Transcode []TranscoderCodec `json:"transcode,omitempty" bencode:"transcode,omitempty"`
-	Mask      string            `json:"mask,omitempty" bencode:"mask,omitempty"`
-	Set       string            `json:"set,omitempty" bencode:"set,omitempty"`
-	Consume   string            `json:"consume,omitempty" bencode:"consume,omitempty"`
-	Accept    string            `json:"accept,omitempty" bencode:"accept,omitempty"`
-	Except    string            `json:"except,omitempty" bencode:"except,omitempty"`
-}
+//// Parametros de manipulação dos codecs na oferta
+//type ParamsOptCodec struct {
+//	Strip     string   `json:"strip,omitempty" bencode:"strip,omitempty"`
+//	Offer     string   `json:"offer,omitempty" bencode:"offer,omitempty"`
+//	Transcode []string `json:"transcode,omitempty" bencode:"transcode,omitempty"`
+//	Mask      string   `json:"mask,omitempty" bencode:"mask,omitempty"`
+//	Set       string   `json:"set,omitempty" bencode:"set,omitempty"`
+//	Consume   string   `json:"consume,omitempty" bencode:"consume,omitempty"`
+//	Accept    string   `json:"accept,omitempty" bencode:"accept,omitempty"`
+//	Except    string   `json:"except,omitempty" bencode:"except,omitempty"`
+//}
 
 // Parametros de manipulação de sessão
 type ParamsSdpAttrSections struct {

@@ -10,7 +10,6 @@ func SDPOffering(parametros *ParamsOptString, options ...ParametrosOption) (*Req
 		ParamsOptString:       parametros,
 		ParamsOptInt:          &ParamsOptInt{},
 		ParamsOptStringArray:  &ParamsOptStringArray{},
-		ParamsOptCodec:        &ParamsOptCodec{},
 		ParamsSdpAttrSections: &ParamsSdpAttrSections{},
 		ParamsSdpAttrCommands: &ParamsSdpAttrCommands{},
 	}
@@ -64,9 +63,14 @@ func (c *RequestRtp) SetRtcpMux(rtcpmux []ParamRTCPMux) ParametrosOption {
 }
 
 // Manipular o transcoder dos codecs
-func (c *RequestRtp) SetCodecEncoder(codecs []TranscoderCodec) ParametrosOption {
+func (c *RequestRtp) SetCodecEncoder(codecs []string) ParametrosOption {
 	return func(s *RequestRtp) error {
-		s.Transcode = codecs
+		trascoder := make([]string, 0)
+		for _, o := range codecs {
+			trascoder = append(trascoder, string("codec-set-transcode="+o))
+		}
+
+		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, trascoder...)
 		return nil
 	}
 }

@@ -96,7 +96,11 @@ a=sendrecv`
 		rtcpmux := make([]ParamRTCPMux, 0)
 		rtcpmux = append(rtcpmux, RTCP_Demux, RTCP_Accept)
 		opt := &RequestRtp{}
-		request, err := SDPOffering(r, opt.SetFlags(flags), opt.SetTransportProtocol(RTP_SAVPF), opt.SetReplace(repl), opt.SetRtcpMux(rtcpmux))
+
+		transcoderList := make([]string, 0)
+		transcoderList = append(transcoderList, string(CODEC_G722))
+
+		request, err := SDPOffering(r, opt.SetFlags(flags), opt.SetTransportProtocol(RTP_AVP), opt.SetReplace(repl), opt.SetRtcpMux(rtcpmux), opt.SetCodecEncoder(transcoderList))
 		require.Nil(t, err)
 		response := client.NewComando(request)
 		require.NotNil(t, response.Sdp)
