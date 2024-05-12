@@ -39,12 +39,6 @@ type ParamFlags string
 // Tipo de parametros usado no rtcp-mux
 type ParamRTCPMux string
 
-//// Tipo de codec para transcoder
-//type TranscoderCodec string
-
-//// Tipo de Mask para remover codec
-//type MaskCodec string
-
 // Tipo de codecs
 type Codecs string
 
@@ -268,18 +262,6 @@ type ParamsOptStringArray struct {
 	Frequencies  []string       `json:"frequencies,omitempty" bencode:"frequencies,omitempty"`
 	Replace      []ParamReplace `json:"replace,omitempty" bencode:"replace,omitempty"`
 }
-
-//// Parametros de manipulação dos codecs na oferta
-//type ParamsOptCodec struct {
-//	Strip     string   `json:"strip,omitempty" bencode:"strip,omitempty"`
-//	Offer     string   `json:"offer,omitempty" bencode:"offer,omitempty"`
-//	Transcode []string `json:"transcode,omitempty" bencode:"transcode,omitempty"`
-//	Mask      string   `json:"mask,omitempty" bencode:"mask,omitempty"`
-//	Set       string   `json:"set,omitempty" bencode:"set,omitempty"`
-//	Consume   string   `json:"consume,omitempty" bencode:"consume,omitempty"`
-//	Accept    string   `json:"accept,omitempty" bencode:"accept,omitempty"`
-//	Except    string   `json:"except,omitempty" bencode:"except,omitempty"`
-//}
 
 // Parametros de manipulação de sessão
 type ParamsSdpAttrSections struct {
