@@ -161,7 +161,6 @@ type RequestRtp struct {
 	*ParamsOptString
 	*ParamsOptInt
 	*ParamsOptStringArray
-	//*ParamsOptCodec
 	*ParamsSdpAttrSections
 	*ParamsSdpAttrCommands
 }
