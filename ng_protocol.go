@@ -1,34 +1,6 @@
 package rtpengine
 
-import "fmt"
-
 type ParametrosOption func(c *RequestRtp) error
-
-func SDPOffering(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
-	request := &RequestRtp{
-		Command:               fmt.Sprint(Offer),
-		ParamsOptString:       parametros,
-		ParamsOptInt:          &ParamsOptInt{},
-		ParamsOptStringArray:  &ParamsOptStringArray{},
-		ParamsSdpAttrSections: &ParamsSdpAttrSections{},
-		ParamsSdpAttrCommands: &ParamsSdpAttrCommands{},
-	}
-
-	for _, o := range options {
-		if err := o(request); err != nil {
-			return nil, err
-		}
-	}
-	return request, nil
-}
-
-func SDPAnswer(parametros *ParamsOptString, options ...*ParamsOptStringArray) (string error) {
-	return nil
-}
-
-func SDPDelete(parametros *ParamsOptString) (string error) {
-	return nil
-}
 
 // Adcionar um lista de flags para rtpengine
 func (c *RequestRtp) SetFlags(flags []string) ParametrosOption {
