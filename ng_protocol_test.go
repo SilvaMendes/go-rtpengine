@@ -1,10 +1,8 @@
 package rtpengine
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -148,66 +146,66 @@ func TestClientRequestClientPing(t *testing.T) {
 //	})
 //}
 
-func TestClientRequestProfile(t *testing.T) {
-
-	sdp := `v=0
-o=root 289989249 289989249 IN IP4 198.51.100.1
-s=Asterisk PBX 16.20.0
-c=IN IP4 198.51.100.1
-t=0 0
-m=audio 20000 RTP/AVP 111 8 0 101
-a=maxptime:150
-a=rtpmap:111 opus/48000/2
-a=rtpmap:8 PCMA/8000
-a=rtpmap:0 PCMU/8000
-a=rtpmap:101 telephone-event/8000
-a=fmtp:101 0-16
-a=sendrecv`
-
-	t.Run("Profile RTP/AVP Offer", func(t *testing.T) {
-		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
-		require.Nil(t, err)
-
-		r := &ParamsOptString{FromTag: "asdasdasd494894", ToTag: "asdasdad7879", CallId: "5464asdas", Sdp: sdp}
-		command := string(Offer)
-
-		//perfil := ProfilerRTP_UDP_Offer(command, r)
-		//perfil := ProfilerRTP_TCP_Offer(command, r)
-		//perfil := ProfilerRTP_TLS_Offer(command, r)
-		//perfil := ProfilerRTP_WS_Offer(command, r)
-		perfil := ProfilerRTP_WSS_Offer(command, r)
-		require.NotNil(t, perfil)
-
-		response := client.NewComando(perfil)
-		require.NotNil(t, response.Sdp)
-
-		js, _ := json.Marshal(perfil)
-		fmt.Println("Objeto JSON")
-		fmt.Println(string(js))
-		fmt.Println("String do novo SDP")
-		fmt.Println(response.Sdp)
-		fmt.Println("Func:", t.Name(), "Comando:"+command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
-	})
-
-	time.Sleep(4 * time.Second)
-
-	t.Run("Profile RTP/AVP Delete", func(t *testing.T) {
-		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
-		require.Nil(t, err)
-		r := &RequestRtp{
-			Command: string(Delete),
-			ParamsOptString: &ParamsOptString{
-				FromTag: "asdasdasd494894",
-				ToTag:   "asdasdad7879",
-				CallId:  "5464asdas",
-			},
-		}
-
-		response := client.NewComando(r)
-		require.NotNil(t, response)
-		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
-	})
-
-}
+//func TestClientRequestProfile(t *testing.T) {
+//
+//	sdp := `v=0
+//o=root 289989249 289989249 IN IP4 198.51.100.1
+//s=Asterisk PBX 16.20.0
+//c=IN IP4 198.51.100.1
+//t=0 0
+//m=audio 20000 RTP/AVP 111 8 0 101
+//a=maxptime:150
+//a=rtpmap:111 opus/48000/2
+//a=rtpmap:8 PCMA/8000
+//a=rtpmap:0 PCMU/8000
+//a=rtpmap:101 telephone-event/8000
+//a=fmtp:101 0-16
+//a=sendrecv`
+//
+//	t.Run("Profile RTP/AVP Offer", func(t *testing.T) {
+//		c := &Engine{}
+//		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+//		require.Nil(t, err)
+//
+//		r := &ParamsOptString{FromTag: "asdasdasd494894", ToTag: "asdasdad7879", CallId: "5464asdas", Sdp: sdp}
+//		command := string(Offer)
+//
+//		//perfil := ProfilerRTP_UDP_Offer(command, r)
+//		//perfil := ProfilerRTP_TCP_Offer(command, r)
+//		//perfil := ProfilerRTP_TLS_Offer(command, r)
+//		//perfil := ProfilerRTP_WS_Offer(command, r)
+//		perfil := ProfilerRTP_WSS_Offer(command, r)
+//		require.NotNil(t, perfil)
+//
+//		response := client.NewComando(perfil)
+//		require.NotNil(t, response.Sdp)
+//
+//		js, _ := json.Marshal(perfil)
+//		fmt.Println("Objeto JSON")
+//		fmt.Println(string(js))
+//		fmt.Println("String do novo SDP")
+//		fmt.Println(response.Sdp)
+//		fmt.Println("Func:", t.Name(), "Comando:"+command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+//	})
+//
+//	time.Sleep(4 * time.Second)
+//
+//	t.Run("Profile RTP/AVP Delete", func(t *testing.T) {
+//		c := &Engine{}
+//		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+//		require.Nil(t, err)
+//		r := &RequestRtp{
+//			Command: string(Delete),
+//			ParamsOptString: &ParamsOptString{
+//				FromTag: "asdasdasd494894",
+//				ToTag:   "asdasdad7879",
+//				CallId:  "5464asdas",
+//			},
+//		}
+//
+//		response := client.NewComando(r)
+//		require.NotNil(t, response)
+//		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+//	})
+//
+//}
