@@ -1,27 +1,7 @@
 package rtpengine
 
-import (
-	"fmt"
-)
-
-func SDPOffering(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
-	request := &RequestRtp{
-		Command:              fmt.Sprint(Offer),
-		ParamsOptString:      parametros,
-		ParamsOptInt:         &ParamsOptInt{},
-		ParamsOptStringArray: &ParamsOptStringArray{},
-	}
-
-	for _, o := range options {
-		if err := o(request); err != nil {
-			return nil, err
-		}
-	}
-	return request, nil
-}
-
 // Perfil para o protocolo UDP
-func ProfilerRTP_UDP(command string, parametros *ParamsOptString) *RequestRtp {
+func ProfilerRTP_UDP_Offer(command string, parametros *ParamsOptString) *RequestRtp {
 	request := &RequestRtp{
 		Command:              command,
 		ParamsOptString:      parametros,
@@ -34,26 +14,26 @@ func ProfilerRTP_UDP(command string, parametros *ParamsOptString) *RequestRtp {
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
-	flags := make([]string, 0)
-	sdes := make([]string, 0)
+	flags := make([]ParamFlags, 0)
+	sdes := make([]SDES, 0)
 
 	rtcpmux = append(rtcpmux, RTCPDemux)
 	replace = append(replace, SessionConnection, Origin)
-	flags = append(flags, string(StripExtmap), string(NoRtcpAttribute))
-	sdes = append(sdes, string(SDESOff))
+	flags = append(flags, StripExtmap, NoRtcpAttribute)
+	sdes = append(sdes, SDESOff)
 
 	request.RtcpMux = rtcpmux
 	request.Replace = replace
 	request.Flags = flags
-	request.ICE = string(ICERemove)
-	request.DTLS = string(DTLSOff)
+	request.ICE = ICERemove
+	request.DTLS = DTLSOff
 	request.SDES = sdes
 
 	return request
 }
 
 // Perfil para o protocolo TCP
-func ProfilerRTP_TCP(command string, parametros *ParamsOptString) *RequestRtp {
+func ProfilerRTP_TCP_Offer(command string, parametros *ParamsOptString) *RequestRtp {
 	request := &RequestRtp{
 		Command:              command,
 		ParamsOptString:      parametros,
@@ -66,26 +46,26 @@ func ProfilerRTP_TCP(command string, parametros *ParamsOptString) *RequestRtp {
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
-	flags := make([]string, 0)
-	osrtp := make([]string, 0)
+	flags := make([]ParamFlags, 0)
+	osrtp := make([]OSRTP, 0)
 
 	rtcpmux = append(rtcpmux, RTCPDemux)
 	replace = append(replace, SessionConnection, Origin)
-	flags = append(flags, string(LoopProtect), string(StrictSource))
-	osrtp = append(osrtp, string(OSRTPOffer))
+	flags = append(flags, LoopProtect, StrictSource)
+	osrtp = append(osrtp, OSRTPOffer)
 
 	request.RtcpMux = rtcpmux
 	request.Replace = replace
 	request.Flags = flags
-	request.ICE = string(ICERemove)
-	request.DTLS = string(DTLSOff)
+	request.ICE = ICERemove
+	request.DTLS = DTLSOff
 	request.OSRTP = osrtp
 
 	return request
 }
 
 // Perfil para o protocolo TLS
-func ProfilerRTP_TLS(command string, parametros *ParamsOptString) *RequestRtp {
+func ProfilerRTP_TLS_Offer(command string, parametros *ParamsOptString) *RequestRtp {
 	request := &RequestRtp{
 		Command:              command,
 		ParamsOptString:      parametros,
@@ -98,23 +78,85 @@ func ProfilerRTP_TLS(command string, parametros *ParamsOptString) *RequestRtp {
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
-	flags := make([]string, 0)
-	osrtp := make([]string, 0)
+	flags := make([]ParamFlags, 0)
+	osrtp := make([]OSRTP, 0)
 
 	rtcpmux = append(rtcpmux, RTCPOffer)
 
 	replace = append(replace, SessionConnection, Origin)
-	flags = append(flags, string(LoopProtect), string(TrustAddress))
-	osrtp = append(osrtp, string(OSRTPAccept))
+	flags = append(flags, LoopProtect, TrustAddress)
+	osrtp = append(osrtp, OSRTPAccept)
 
 	request.RtcpMux = rtcpmux
 	request.Replace = replace
 	request.Flags = flags
-	request.ICE = string(ICERemove)
-	request.DTLS = string(DTLSOff)
+	request.ICE = ICERemove
+	request.DTLS = DTLSOff
 	request.OSRTP = osrtp
 
-	request.SdpAttr.Global.Add = append(request.SdpAttr.Global.Add, "Software Switches CBX4")
+	return request
+}
+
+// Perfil para o protocolo WS
+func ProfilerRTP_WS_Offer(command string, parametros *ParamsOptString) *RequestRtp {
+	request := &RequestRtp{
+		Command:              command,
+		ParamsOptString:      parametros,
+		ParamsOptInt:         &ParamsOptInt{},
+		ParamsOptStringArray: &ParamsOptStringArray{},
+	}
+
+	// definir o protocolo como UDP/TLS/RTP/SAVP
+	parametros.TransportProtocol = string(UDP_TLS_RTP_SAVP)
+
+	rtcpmux := make([]ParamRTCPMux, 0)
+	replace := make([]ParamReplace, 0)
+	flags := make([]ParamFlags, 0)
+	sdes := make([]SDES, 0)
+
+	rtcpmux = append(rtcpmux, RTCPOffer)
+	replace = append(replace, SessionConnection, Origin)
+	flags = append(flags, LoopProtect)
+	sdes = append(sdes, SDESPad)
+
+	request.RtcpMux = rtcpmux
+	request.Replace = replace
+	request.Flags = flags
+	request.SDES = sdes
+	request.ICE = ICEForce
+	request.DTLS = DTLSPassive
+
+	return request
+}
+
+// Perfil para o protocolo WS
+func ProfilerRTP_WSS_Offer(command string, parametros *ParamsOptString) *RequestRtp {
+	request := &RequestRtp{
+		Command:              command,
+		ParamsOptString:      parametros,
+		ParamsOptInt:         &ParamsOptInt{},
+		ParamsOptStringArray: &ParamsOptStringArray{},
+	}
+
+	// definir o protocolo como UDP/TLS/RTP/SAVPF
+	parametros.TransportProtocol = string(UDP_TLS_RTP_SAVPF)
+
+	rtcpmux := make([]ParamRTCPMux, 0)
+	replace := make([]ParamReplace, 0)
+	flags := make([]ParamFlags, 0)
+	sdes := make([]SDES, 0)
+
+	rtcpmux = append(rtcpmux, RTCPOffer)
+	replace = append(replace, SessionConnection, Origin)
+	flags = append(flags, LoopProtect, TrickleICE, TrustAddress, StrictSource, Unidirectional)
+	sdes = append(sdes, SDESPad)
+
+	request.RtcpMux = rtcpmux
+	request.Replace = replace
+	request.Flags = flags
+	request.SDES = sdes
+	request.ICE = ICEForce
+	request.DTLS = DTLSActive
 
 	return request
 }

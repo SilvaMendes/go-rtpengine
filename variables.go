@@ -138,6 +138,40 @@ const (
 	ReuseCodecs           ParamFlags = "reuse-codecs"
 	RTCPMirror            ParamFlags = "RTCP-mirror"
 	StaticCodecs          ParamFlags = "static-codecs"
+	CodecExceptPCMU       ParamFlags = "codec-except-PCMU"
+	CodecExceptPCMA       ParamFlags = "codec-except-PCMA"
+	CodecExceptG729       ParamFlags = "codec-except-G729"
+	CodecExceptG729a      ParamFlags = "codec-except-G729a"
+	CodecExceptOpus       ParamFlags = "codec-except-opus"
+	CodecExceptG722       ParamFlags = "codec-except-G722"
+	CodecExceptG723       ParamFlags = "codec-except-G723"
+	CodecExceptILBC       ParamFlags = "codec-except-iLBC"
+	CodecExceptSpeex      ParamFlags = "codec-except-speex"
+	CodecStripPCMU        ParamFlags = "codec-strip-PCMU"
+	CodecStripPCMA        ParamFlags = "codec-strip-PCMA"
+	CodecStripG729        ParamFlags = "codec-strip-G729"
+	CodecStripG729a       ParamFlags = "codec-strip-G729a"
+	CodecStripOpus        ParamFlags = "codec-strip-opus"
+	CodecStripG722        ParamFlags = "codec-strip-G722"
+	CodecStripG723        ParamFlags = "codec-strip-G723"
+	CodecStripILBC        ParamFlags = "codec-strip-iLBC"
+	CodecStripSpeex       ParamFlags = "codec-strip-speex"
+	CodecMaskPCMA         ParamFlags = "codec-mask-PCMA"
+	CodecMaskG729         ParamFlags = "codec-mask-G729"
+	CodecMaskG729a        ParamFlags = "codec-mask-G729a"
+	CodecMaskOpus         ParamFlags = "codec-mask-opus"
+	CodecMaskG722         ParamFlags = "codec-mask-G722"
+	CodecMaskG723         ParamFlags = "codec-mask-G723"
+	CodecMaskILBC         ParamFlags = "codec-mask-iLBC"
+	CodecMaskSpeex        ParamFlags = "codec-mask-speex"
+	CodecTranscodePCMA    ParamFlags = "codec-transcode-PCMA"
+	CodecTranscodeG729    ParamFlags = "codec-transcode-G729"
+	CodecTranscodeG729a   ParamFlags = "codec-transcode-G729a"
+	CodecTranscodeOpus    ParamFlags = "codec-transcode-opus"
+	CodecTranscodeG722    ParamFlags = "codec-transcode-G722"
+	CodecTranscodeG723    ParamFlags = "codec-transcode-G723"
+	CodecTranscodeILBC    ParamFlags = "codec-transcode-iLBC"
+	CodecTranscodeSpeex   ParamFlags = "codec-transcode-speex"
 )
 
 // Tipo de parametros usado no rtcp-mux
@@ -260,4 +294,12 @@ const (
 	OSRTPAcceptRFC    OSRTP = "accept-RFC"
 	OSRTPAcceptLegacy OSRTP = "accept-legacy"
 	OSRTPAccept       OSRTP = "accept"
+)
+
+// Tipo Address Family string
+type AddressFamily string
+
+const (
+	AddressFamilyIP4 AddressFamily = "IP4"
+	AddressFamilyIP6 AddressFamily = "IP6"
 )

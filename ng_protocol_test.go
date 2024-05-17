@@ -172,9 +172,11 @@ a=sendrecv`
 		r := &ParamsOptString{FromTag: "asdasdasd494894", ToTag: "asdasdad7879", CallId: "5464asdas", Sdp: sdp}
 		command := string(Offer)
 
-		//perfil := ProfilerRTP_UDP(command, r)
-		//perfil := ProfilerRTP_TCP(command, r)
-		perfil := ProfilerRTP_TLS(command, r)
+		//perfil := ProfilerRTP_UDP_Offer(command, r)
+		//perfil := ProfilerRTP_TCP_Offer(command, r)
+		//perfil := ProfilerRTP_TLS_Offer(command, r)
+		//perfil := ProfilerRTP_WS_Offer(command, r)
+		perfil := ProfilerRTP_WSS_Offer(command, r)
 		require.NotNil(t, perfil)
 
 		response := client.NewComando(perfil)

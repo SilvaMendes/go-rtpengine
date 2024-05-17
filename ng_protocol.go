@@ -1,9 +1,62 @@
 package rtpengine
 
+import "fmt"
+
 type ParametrosOption func(c *RequestRtp) error
 
+// Gera oferta do SDP com passagem de Parametros
+func SDPOffering(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
+	request := &RequestRtp{
+		Command:              fmt.Sprint(Offer),
+		ParamsOptString:      parametros,
+		ParamsOptInt:         &ParamsOptInt{},
+		ParamsOptStringArray: &ParamsOptStringArray{},
+	}
+
+	for _, o := range options {
+		if err := o(request); err != nil {
+			return nil, err
+		}
+	}
+	return request, nil
+}
+
+// Gera Atendimendo do SDP com passagem de Parametros
+func SDPAnswer(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
+	request := &RequestRtp{
+		Command:              fmt.Sprint(Answer),
+		ParamsOptString:      parametros,
+		ParamsOptInt:         &ParamsOptInt{},
+		ParamsOptStringArray: &ParamsOptStringArray{},
+	}
+
+	for _, o := range options {
+		if err := o(request); err != nil {
+			return nil, err
+		}
+	}
+	return request, nil
+}
+
+// Gera Delete da sessão no rtpengine com passagem de Parametros
+func SDPDelete(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
+	request := &RequestRtp{
+		Command:              fmt.Sprint(Delete),
+		ParamsOptString:      parametros,
+		ParamsOptInt:         &ParamsOptInt{},
+		ParamsOptStringArray: &ParamsOptStringArray{},
+	}
+
+	for _, o := range options {
+		if err := o(request); err != nil {
+			return nil, err
+		}
+	}
+	return request, nil
+}
+
 // Adcionar um lista de flags para rtpengine
-func (c *RequestRtp) SetFlags(flags []string) ParametrosOption {
+func (c *RequestRtp) SetFlags(flags []ParamFlags) ParametrosOption {
 	return func(s *RequestRtp) error {
 		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, flags...)
 		return nil
@@ -35,11 +88,11 @@ func (c *RequestRtp) SetRtcpMux(rtcpmux []ParamRTCPMux) ParametrosOption {
 }
 
 // Manipular o transcoder dos codecs
-func (c *RequestRtp) SetCodecEncoder(codecs []string) ParametrosOption {
+func (c *RequestRtp) SetCodecEncoder(codecs []Codecs) ParametrosOption {
 	return func(s *RequestRtp) error {
-		trascoder := make([]string, 0)
+		trascoder := make([]ParamFlags, 0)
 		for _, o := range codecs {
-			trascoder = append(trascoder, string("codec-transcode-"+o))
+			trascoder = append(trascoder, ParamFlags("codec-transcode-"+o))
 		}
 
 		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, trascoder...)
@@ -48,11 +101,11 @@ func (c *RequestRtp) SetCodecEncoder(codecs []string) ParametrosOption {
 }
 
 // Manipular codecs marca quais serão aceito na lista do SDP
-func (c *RequestRtp) SetCodecMask(codecs []string) ParametrosOption {
+func (c *RequestRtp) SetCodecMask(codecs []Codecs) ParametrosOption {
 	return func(s *RequestRtp) error {
-		mask := make([]string, 0)
+		mask := make([]ParamFlags, 0)
 		for _, o := range codecs {
-			mask = append(mask, string("codec-mask-"+o))
+			mask = append(mask, ParamFlags("codec-mask-"+o))
 		}
 
 		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, mask...)
@@ -61,11 +114,11 @@ func (c *RequestRtp) SetCodecMask(codecs []string) ParametrosOption {
 }
 
 // Manipular codecs remover da lista do SDP
-func (c *RequestRtp) SetCodecStrip(codecs []string) ParametrosOption {
+func (c *RequestRtp) SetCodecStrip(codecs []Codecs) ParametrosOption {
 	return func(s *RequestRtp) error {
-		strip := make([]string, 0)
+		strip := make([]ParamFlags, 0)
 		for _, o := range codecs {
-			strip = append(strip, string("codec-strip-"+o))
+			strip = append(strip, ParamFlags("codec-strip-"+o))
 		}
 
 		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, strip...)
@@ -74,11 +127,11 @@ func (c *RequestRtp) SetCodecStrip(codecs []string) ParametrosOption {
 }
 
 // Bloquear todos os codecs, exceto aqueles fornecidos na lista de permissões.
-func (c *RequestRtp) SetCodecExcept(codecs []string) ParametrosOption {
+func (c *RequestRtp) SetCodecExcept(codecs []Codecs) ParametrosOption {
 	return func(s *RequestRtp) error {
-		except := make([]string, 0)
+		except := make([]ParamFlags, 0)
 		for _, o := range codecs {
-			except = append(except, string("codec-except-"+o))
+			except = append(except, ParamFlags("codec-except-"+o))
 		}
 
 		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, except...)
@@ -89,19 +142,19 @@ func (c *RequestRtp) SetCodecExcept(codecs []string) ParametrosOption {
 // Desabilitar a criptografia SDES na oferta
 func (c *RequestRtp) DesabilitarSDES() ParametrosOption {
 	return func(s *RequestRtp) error {
-		sdes := make([]string, 0)
-		sdes = append(sdes, string("SDES-off"))
+		sdes := make([]SDES, 0)
+		sdes = append(sdes, SDESOff)
 		s.ParamsOptStringArray.SDES = append(s.ParamsOptStringArray.SDES, sdes...)
 		return nil
 	}
 }
 
 // Excluir pacotes de criptografia individuais
-func (c *RequestRtp) DeletesSDES(cript []string) ParametrosOption {
+func (c *RequestRtp) DeletesSDES(cript []CryptoSuite) ParametrosOption {
 	return func(s *RequestRtp) error {
-		sdes := make([]string, 0)
+		sdes := make([]SDES, 0)
 		for _, o := range cript {
-			sdes = append(sdes, string("no-"+o))
+			sdes = append(sdes, "no-"+SDES(o))
 		}
 		s.ParamsOptStringArray.SDES = append(s.ParamsOptStringArray.SDES, sdes...)
 		return nil
@@ -109,11 +162,11 @@ func (c *RequestRtp) DeletesSDES(cript []string) ParametrosOption {
 }
 
 // Permitir apenas o pacotes de criptografia individuais
-func (c *RequestRtp) EnableSDES(cript []string) ParametrosOption {
+func (c *RequestRtp) EnableSDES(cript []CryptoSuite) ParametrosOption {
 	return func(s *RequestRtp) error {
-		sdes := make([]string, 0)
+		sdes := make([]SDES, 0)
 		for _, o := range cript {
-			sdes = append(sdes, string("only-"+o))
+			sdes = append(sdes, "only-"+SDES(o))
 		}
 		s.ParamsOptStringArray.SDES = append(s.ParamsOptStringArray.SDES, sdes...)
 		return nil
@@ -136,9 +189,50 @@ func (c *RequestRtp) ICEForce() ParametrosOption {
 	}
 }
 
-func (c *RequestRtp) SetAttrChange(sdpAttr ParamsSdpAttrSections) ParametrosOption {
+// Manipulador de atributos do SDP suporta adicionar, remover e substituir
+func (c *RequestRtp) SetAttrChange(sdpAttr *ParamsSdpAttrSections) ParametrosOption {
 	return func(s *RequestRtp) error {
 		s.SdpAttr = sdpAttr
+		return nil
+	}
+}
+
+// Manipulador de atributos do SDP suporta adicionar, remover e substituir
+func (c *RequestRtp) SetViaBranchTag(branch string) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.ViaBranch = branch
+		return nil
+	}
+}
+
+// Adicionar o valor de ptime do codec no offer valor a ser utilizado e inteiro
+func (c *RequestRtp) SetPtimeCodecOffer(ptime int) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.Ptime = ptime
+		return nil
+	}
+}
+
+// Adicionar o valor de ptime do codec no answer valor a ser utilizado e inteiro
+func (c *RequestRtp) SetPtimeCodecAnswer(ptime int) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.PtimeReverse = ptime
+		return nil
+	}
+}
+
+// Adicionar o received-from Usado se os endereços SDP não forem confiáveis
+func (c *RequestRtp) SetReceivedFrom(addressFamily AddressFamily, Address string) ParametrosOption {
+	return func(s *RequestRtp) error {
+		receivedFrom := make([]string, 0)
+		s.ReceivedFrom = append(receivedFrom, string(addressFamily), Address)
+		return nil
+	}
+}
+
+func (c *RequestRtp) SetMediaAddress(Address string) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.MediaAddress = Address
 		return nil
 	}
 }
