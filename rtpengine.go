@@ -24,8 +24,6 @@ type RequestRtp struct {
 	*ParamsOptString
 	*ParamsOptInt
 	*ParamsOptStringArray
-	*ParamsSdpAttrSections
-	*ParamsSdpAttrCommands
 }
 
 // Estrutura da resposta do comando
@@ -54,47 +52,48 @@ type ValuesRTP struct {
 
 // Parametros de comportamento
 type ParamsOptString struct {
-	FromTag                string `json:"from-tag" bencode:"from-tag"`
-	ToTag                  string `json:"to-tag" bencode:"to-tag"`
-	CallId                 string `json:"call-id" bencode:"call-id"`
-	TransportProtocol      string `json:"transport-protocol" bencode:"transport-protocol"`
-	MediaAddress           string `json:"media-address,omitempty" bencode:"media-address,omitempty"`
-	ICE                    string `json:"ICE,omitempty" bencode:"ICE,omitempty"`
-	AddressFamily          string `json:"address-family,omitempty" bencode:"address-family,omitempty"`
-	DTLS                   string `json:"DTLS,omitempty" bencode:"DTLS,omitempty"`
-	ViaBranch              string `json:"via-branch,omitempty" bencode:"via-branch,omitempty"`
-	XmlrpcCallback         string `json:"xmlrpc-callback,omitempty" bencode:"xmlrpc-callback,omitempty"`
-	Metadata               string `json:"metadata,omitempty" bencode:"metadata,omitempty"`
-	Address                string `json:"address,omitempty" bencode:"address,omitempty"`
-	File                   string `json:"file,omitempty" bencode:"file,omitempty"`
-	Code                   string `json:"code,omitempty" bencode:"code,omitempty"`
-	DTLSFingerprint        string `json:"DTLS-fingerprint,omitempty" bencode:"DTLS-fingerprint,omitempty"`
-	ICELite                string `json:"ICE-lite,omitempty" bencode:"ICE-lite,omitempty"`
-	MediaEcho              string `json:"media-echo,omitempty" bencode:"media-echo,omitempty"`
-	Label                  string `json:"label,omitempty" bencode:"label,omitempty"`
-	SetLabel               string `json:"set-label,omitempty" bencode:"set-label,omitempty"`
-	FromLabel              string `json:"from-label,omitempty" bencode:"from-label,omitempty"`
-	ToLabel                string `json:"to-label,omitempty" bencode:"to-label,omitempty"`
-	DTMFSecurity           string `json:"DTMF-security,omitempty" bencode:"DTMF-security,omitempty"`
-	Digit                  string `json:"digit,omitempty" bencode:"digit,omitempty"`
-	DTMFSecurityTrigger    string `json:"DTMF-security-trigger,omitempty" bencode:"DTMF-security-trigger,omitempty"`
-	DTMFSecurityTriggerEnd string `json:"DTMF-security-trigger-end,omitempty" bencode:"DTMF-security-trigger-end,omitempty"`
-	Trigger                string `json:"trigger,omitempty" bencode:"trigger,omitempty"`
-	TriggerEnd             string `json:"trigger-end,omitempty" bencode:"trigger-end,omitempty"`
-	All                    string `json:"all,omitempty" bencode:"all,omitempty"`
-	Frequency              string `json:"frequency,omitempty" bencode:"frequency,omitempty"`
-	Blob                   string `json:"blob,omitempty" bencode:"blob,omitempty"`
-	Sdp                    string `json:"sdp" bencode:"sdp"`
-	AudioPlayer            string `json:"audio-player,omitempty" bencode:"audio-player,omitempty"`
-	DTMFLogDest            string `json:"dtmf-log-dest,omitempty" bencode:"dtmf-log-dest,omitempty"`
-	OutputDestination      string `json:"output-destination,omitempty" bencode:"output-destination,omitempty"`
-	VscStartRec            string `json:"vsc-start-rec,omitempty" bencode:"vsc-start-rec,omitempty"`
-	VscStopRec             string `json:"vsc-stop-rec,omitempty" bencode:"vsc-stop-rec,omitempty"`
-	VscPauseRec            string `json:"vsc-pause-rec,omitempty" bencode:"vsc-pause-rec,omitempty"`
-	VscStartStopRec        string `json:"vsc-start-stop-rec,omitempty" bencode:"vsc-start-stop-rec,omitempty"`
-	VscPauseResumeRec      string `json:"vsc-pause-resume-rec,omitempty" bencode:"vsc-pause-resume-rec,omitempty"`
-	VscStartPauseResumeRec string `json:"vsc-start-pause-resume-rec,omitempty" bencode:"vsc-start-pause-resume-rec,omitempty"`
-	RtppFlags              string `json:"rtpp-flags,omitempty" bencode:"rtpp-flags,omitempty"`
+	FromTag                string                `json:"from-tag" bencode:"from-tag"`
+	ToTag                  string                `json:"to-tag" bencode:"to-tag"`
+	CallId                 string                `json:"call-id" bencode:"call-id"`
+	TransportProtocol      string                `json:"transport-protocol" bencode:"transport-protocol"`
+	MediaAddress           string                `json:"media-address,omitempty" bencode:"media-address,omitempty"`
+	ICE                    string                `json:"ICE,omitempty" bencode:"ICE,omitempty"`
+	AddressFamily          string                `json:"address-family,omitempty" bencode:"address-family,omitempty"`
+	DTLS                   string                `json:"DTLS,omitempty" bencode:"DTLS,omitempty"`
+	ViaBranch              string                `json:"via-branch,omitempty" bencode:"via-branch,omitempty"`
+	XmlrpcCallback         string                `json:"xmlrpc-callback,omitempty" bencode:"xmlrpc-callback,omitempty"`
+	Metadata               string                `json:"metadata,omitempty" bencode:"metadata,omitempty"`
+	Address                string                `json:"address,omitempty" bencode:"address,omitempty"`
+	File                   string                `json:"file,omitempty" bencode:"file,omitempty"`
+	Code                   string                `json:"code,omitempty" bencode:"code,omitempty"`
+	DTLSFingerprint        string                `json:"DTLS-fingerprint,omitempty" bencode:"DTLS-fingerprint,omitempty"`
+	ICELite                string                `json:"ICE-lite,omitempty" bencode:"ICE-lite,omitempty"`
+	MediaEcho              string                `json:"media-echo,omitempty" bencode:"media-echo,omitempty"`
+	Label                  string                `json:"label,omitempty" bencode:"label,omitempty"`
+	SetLabel               string                `json:"set-label,omitempty" bencode:"set-label,omitempty"`
+	FromLabel              string                `json:"from-label,omitempty" bencode:"from-label,omitempty"`
+	ToLabel                string                `json:"to-label,omitempty" bencode:"to-label,omitempty"`
+	DTMFSecurity           string                `json:"DTMF-security,omitempty" bencode:"DTMF-security,omitempty"`
+	Digit                  string                `json:"digit,omitempty" bencode:"digit,omitempty"`
+	DTMFSecurityTrigger    string                `json:"DTMF-security-trigger,omitempty" bencode:"DTMF-security-trigger,omitempty"`
+	DTMFSecurityTriggerEnd string                `json:"DTMF-security-trigger-end,omitempty" bencode:"DTMF-security-trigger-end,omitempty"`
+	Trigger                string                `json:"trigger,omitempty" bencode:"trigger,omitempty"`
+	TriggerEnd             string                `json:"trigger-end,omitempty" bencode:"trigger-end,omitempty"`
+	All                    string                `json:"all,omitempty" bencode:"all,omitempty"`
+	Frequency              string                `json:"frequency,omitempty" bencode:"frequency,omitempty"`
+	Blob                   string                `json:"blob,omitempty" bencode:"blob,omitempty"`
+	Sdp                    string                `json:"sdp" bencode:"sdp"`
+	AudioPlayer            string                `json:"audio-player,omitempty" bencode:"audio-player,omitempty"`
+	DTMFLogDest            string                `json:"dtmf-log-dest,omitempty" bencode:"dtmf-log-dest,omitempty"`
+	OutputDestination      string                `json:"output-destination,omitempty" bencode:"output-destination,omitempty"`
+	VscStartRec            string                `json:"vsc-start-rec,omitempty" bencode:"vsc-start-rec,omitempty"`
+	VscStopRec             string                `json:"vsc-stop-rec,omitempty" bencode:"vsc-stop-rec,omitempty"`
+	VscPauseRec            string                `json:"vsc-pause-rec,omitempty" bencode:"vsc-pause-rec,omitempty"`
+	VscStartStopRec        string                `json:"vsc-start-stop-rec,omitempty" bencode:"vsc-start-stop-rec,omitempty"`
+	VscPauseResumeRec      string                `json:"vsc-pause-resume-rec,omitempty" bencode:"vsc-pause-resume-rec,omitempty"`
+	VscStartPauseResumeRec string                `json:"vsc-start-pause-resume-rec,omitempty" bencode:"vsc-start-pause-resume-rec,omitempty"`
+	RtppFlags              string                `json:"rtpp-flags,omitempty" bencode:"rtpp-flags,omitempty"`
+	SdpAttr                ParamsSdpAttrSections `json:"sdp-attr,omitempty" bencode:"sdp-attr,omitempty"`
 }
 
 // Parametros de comportamento tipo inteiro
@@ -127,15 +126,17 @@ type ParamsOptStringArray struct {
 
 // Parametros de manipulação de sessão
 type ParamsSdpAttrSections struct {
-	Global string `json:"global,omitempty" bencode:"global,omitempty"`
-	Audio  string `json:"audio,omitempty" bencode:"audio,omitempty"`
-	Video  string `json:"video,omitempty" bencode:"video,omitempty"`
+	Global ParamsSdpAttrCommands `json:"global,omitempty" bencode:"global,omitempty"`
+	Audio  ParamsSdpAttrCommands `json:"audio,omitempty" bencode:"audio,omitempty"`
+	Video  ParamsSdpAttrCommands `json:"video,omitempty" bencode:"video,omitempty"`
+	None   ParamsSdpAttrCommands `json:"none,omitempty" bencode:"none,omitempty"`
 }
 
 // Parametros de atributos de comandos
 type ParamsSdpAttrCommands struct {
-	Add    string `json:"add,omitempty" bencode:"add,omitempty"`
-	Remove string `json:"remove,omitempty" bencode:"remove,omitempty"`
+	Add        []string   `json:"add,omitempty" bencode:"add,omitempty"`
+	Remove     []string   `json:"remove,omitempty" bencode:"remove,omitempty"`
+	Substitute [][]string `json:"substitute,omitempty" bencode:"substitute,omitempty"`
 }
 
 // Gera o cookie do comando

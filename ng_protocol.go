@@ -135,3 +135,10 @@ func (c *RequestRtp) ICEForce() ParametrosOption {
 		return nil
 	}
 }
+
+func (c *RequestRtp) SetAttrChange(sdpAttr ParamsSdpAttrSections) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.SdpAttr = sdpAttr
+		return nil
+	}
+}
