@@ -66,7 +66,7 @@ func (c *RequestRtp) SetFlags(flags []ParamFlags) ParametrosOption {
 // Manipular o Transport Protocol do SDP
 func (c *RequestRtp) SetTransportProtocol(proto TransportProtocol) ParametrosOption {
 	return func(s *RequestRtp) error {
-		s.TransportProtocol = string(proto)
+		s.TransportProtocol = proto
 		return nil
 	}
 }

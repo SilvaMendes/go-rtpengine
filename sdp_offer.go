@@ -10,7 +10,7 @@ func ProfilerRTP_UDP_Offer(command string, parametros *ParamsOptString) *Request
 	}
 
 	// definir o protocolo como RTP/AVP
-	parametros.TransportProtocol = string(RTP_AVP)
+	parametros.TransportProtocol = RTP_AVP
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
@@ -42,7 +42,7 @@ func ProfilerRTP_TCP_Offer(command string, parametros *ParamsOptString) *Request
 	}
 
 	// definir o protocolo como RTP/AVP
-	parametros.TransportProtocol = string(RTP_AVP)
+	parametros.TransportProtocol = RTP_AVP
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
@@ -74,7 +74,7 @@ func ProfilerRTP_TLS_Offer(command string, parametros *ParamsOptString) *Request
 	}
 
 	// definir o protocolo como RTP/SAVP
-	parametros.TransportProtocol = string(RTP_SAVP)
+	parametros.TransportProtocol = RTP_SAVP
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
@@ -107,7 +107,7 @@ func ProfilerRTP_WS_Offer(command string, parametros *ParamsOptString) *RequestR
 	}
 
 	// definir o protocolo como UDP/TLS/RTP/SAVP
-	parametros.TransportProtocol = string(UDP_TLS_RTP_SAVP)
+	parametros.TransportProtocol = UDP_TLS_RTP_SAVP
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
@@ -139,7 +139,7 @@ func ProfilerRTP_WSS_Offer(command string, parametros *ParamsOptString) *Request
 	}
 
 	// definir o protocolo como UDP/TLS/RTP/SAVPF
-	parametros.TransportProtocol = string(UDP_TLS_RTP_SAVPF)
+	parametros.TransportProtocol = UDP_TLS_RTP_SAVPF
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)

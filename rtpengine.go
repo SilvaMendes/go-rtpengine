@@ -55,7 +55,7 @@ type ParamsOptString struct {
 	FromTag                string                 `json:"from-tag" bencode:"from-tag"`
 	ToTag                  string                 `json:"to-tag" bencode:"to-tag"`
 	CallId                 string                 `json:"call-id" bencode:"call-id"`
-	TransportProtocol      string                 `json:"transport-protocol" bencode:"transport-protocol"`
+	TransportProtocol      TransportProtocol      `json:"transport-protocol" bencode:"transport-protocol"`
 	MediaAddress           string                 `json:"media-address,omitempty" bencode:"media-address,omitempty"`
 	ICE                    ICE                    `json:"ICE,omitempty" bencode:"ICE,omitempty"`
 	AddressFamily          AddressFamily          `json:"address-family,omitempty" bencode:"address-family,omitempty"`

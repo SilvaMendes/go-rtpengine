@@ -9,7 +9,7 @@ func ProfilerRTP_UDP_Answer(command string, parametros *ParamsOptString) *Reques
 	}
 
 	// definir o protocolo como RTP/AVP
-	parametros.TransportProtocol = string(RTP_AVP)
+	parametros.TransportProtocol = RTP_AVP
 
 	rtcpmux := make([]ParamRTCPMux, 0)
 	replace := make([]ParamReplace, 0)
