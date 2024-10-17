@@ -53,7 +53,7 @@ type ValuesRTP struct {
 // Parametros de comportamento
 type ParamsOptString struct {
 	FromTag                string                 `json:"from-tag" bencode:"from-tag"`
-	ToTag                  string                 `json:"to-tag" bencode:"to-tag"`
+	ToTag                  string                 `json:"to-tag,omitempty" bencode:"to-tag"`
 	CallId                 string                 `json:"call-id" bencode:"call-id"`
 	TransportProtocol      TransportProtocol      `json:"transport-protocol" bencode:"transport-protocol"`
 	MediaAddress           string                 `json:"media-address,omitempty" bencode:"media-address,omitempty"`
@@ -164,7 +164,7 @@ func (r *Engine) GetNG() int {
 	return r.ng
 }
 
-// Abrir conexão com p proxy rtpengine
+// Abrir conexão com o proxy rtpengine
 func (r *Engine) Conn() (net.Conn, error) {
 	engine := r.ip.String() + ":" + fmt.Sprint(r.port)
 	conn, err := net.Dial(r.proto, engine)
