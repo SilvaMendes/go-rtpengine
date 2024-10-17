@@ -16,7 +16,7 @@ func TestClientRequestNewClientWithClientPort(t *testing.T) {
 		WithClientPort(2222),
 		WithClientProto("udp"))
 	require.Nil(t, err)
-	require.NotNil(t, rtp.port)
+	require.NotNil(t, &rtp.port)
 	fmt.Println("Func:", t.Name(), "Valor:", rtp.port)
 
 }

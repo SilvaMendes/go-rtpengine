@@ -77,7 +77,8 @@ const (
 type ParamReplace string
 
 const (
-	Origin                   ParamReplace = "origin"
+	Origin ParamReplace = "origin"
+	// DEPRECADO replace-session-connection flag encountered, but not supported anymore
 	SessionConnection        ParamReplace = "session-connection"
 	SdpVersion               ParamReplace = "SDP-version"
 	Username                 ParamReplace = "username"
