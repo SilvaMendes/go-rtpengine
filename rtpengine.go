@@ -28,16 +28,16 @@ type RequestRtp struct {
 
 // Estrutura da resposta do comando
 type ResponseRtp struct {
-	Result      string       `json:"result" bencode:"result"`
-	Sdp         string       `json:"sdp,omitempty" bencode:"sdp,omitempty"`
-	ErrorReason *string      `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
-	Warning     *string      `json:"warning,omitempty" bencode:"warning,omitempty"`
-	Created     *int         `json:"created,omitempty" bencode:"created,omitempty"`
-	CreatedUs   *int         `json:"created_us,omitempty" bencode:"created_us,omitempty"`
-	LastSignal  *int         `json:"last signal,omitempty" bencode:"last signal,omitempty"`
-	SSRC        *interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
-	Tags        *interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
-	Totals      *TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
+	Result      string      `json:"result" bencode:"result"`
+	Sdp         string      `json:"sdp,omitempty" bencode:"sdp,omitempty"`
+	ErrorReason string      `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
+	Warning     string      `json:"warning,omitempty" bencode:"warning,omitempty"`
+	Created     int         `json:"created,omitempty" bencode:"created,omitempty"`
+	CreatedUs   int         `json:"created_us,omitempty" bencode:"created_us,omitempty"`
+	LastSignal  int         `json:"last signal,omitempty" bencode:"last signal,omitempty"`
+	SSRC        interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
+	Tags        interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
+	Totals      TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
 }
 
 type TotalRTP struct {
@@ -193,14 +193,14 @@ func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
 	cookieIndex := bytes.IndexAny(resposta, " ")
 	if cookieIndex != len(cookie) {
 		resp.Result = "error"
-		*resp.ErrorReason = "Erro ao analisar a mensagem"
+		resp.ErrorReason = "Erro ao analisar a mensagem"
 		return resp
 	}
 
 	cookieResponse := string(resposta[:cookieIndex])
 	if cookieResponse != cookie {
 		resp.Result = "error"
-		*resp.ErrorReason = "O cookie não corresponde"
+		resp.ErrorReason = "O cookie não corresponde"
 		return resp
 	}
 
