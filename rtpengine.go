@@ -188,8 +188,8 @@ func EncodeComando(cookie string, command *RequestRtp) ([]byte, error) {
 	return append(bind, data...), nil
 }
 
-func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
-	resp := &ResponseRtp{}
+func DecodeResposta(cookie string, resposta []byte) ResponseRtp {
+	resp := ResponseRtp{}
 	cookieIndex := bytes.IndexAny(resposta, " ")
 	if cookieIndex != len(cookie) {
 		resp.Result = "error"

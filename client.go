@@ -106,17 +106,17 @@ func (s *Client) Close() error {
 	return s.con.Close()
 }
 
-func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
+func (c *Client) NewComando(comando *RequestRtp) ResponseRtp {
 	cookie := c.GetCookie()
 	err := c.ComandoNG(cookie, comando)
 	if err != nil {
-		return nil
+		return ResponseRtp{}
 	}
 
 	Resposta, err := c.RespostaNG(cookie)
 
 	if err != nil {
-		return nil
+		return ResponseRtp{}
 	}
 	return Resposta
 }
@@ -137,13 +137,13 @@ func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 }
 
 // Resposta do servidor ngcp-rtpengine
-func (c *Client) RespostaNG(cookie string) (*ResponseRtp, error) {
+func (c *Client) RespostaNG(cookie string) (ResponseRtp, error) {
 	c.con.SetReadDeadline(time.Now().Add(c.timeout))
 	respostaRaw := make([]byte, 65536)
 
 	_, err := c.con.Read(respostaRaw)
 	if err != nil {
-		return nil, err
+		return ResponseRtp{}, err
 	}
 
 	resposta := DecodeResposta(cookie, respostaRaw)
