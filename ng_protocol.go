@@ -236,3 +236,24 @@ func (c *RequestRtp) SetMediaAddress(Address string) ParametrosOption {
 		return nil
 	}
 }
+
+// fazer uma Query
+func RtpQuery(parametros *ParamsOptString, options ...ParametrosOption) (*RequestRtp, error) {
+	request := &RequestRtp{
+		Command:              fmt.Sprint(Query),
+		ParamsOptString:      parametros,
+		ParamsOptInt:         &ParamsOptInt{},
+		ParamsOptStringArray: &ParamsOptStringArray{},
+	}
+
+	for _, o := range options {
+		if err := o(request); err != nil {
+			return nil, err
+		}
+	}
+	return request, nil
+}
+
+func RtpQueryExecute(query *RequestRtp, client *Client) *ResponseRtp {
+	return client.NewComandoJson(query)
+}

@@ -45,11 +45,28 @@ a=sendrecv`
 			ParamsOptStringArray: &ParamsOptStringArray{Replace: []ParamReplace{Username, SessionName}},
 		}
 		response := client.NewComando(r)
-		require.NotNil(t, response)
+		require.NotNil(t, response.Result)
 		fmt.Println(response.Sdp)
 		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
 	})
-	time.Sleep(4 * time.Second)
+	time.Sleep(2 * time.Second)
+
+	t.Run("Query", func(t *testing.T) {
+		c := &Engine{}
+		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		require.Nil(t, err)
+
+		r := &RequestRtp{
+			Command:         string(Query),
+			ParamsOptString: &ParamsOptString{CallId: "5464asdas00000000"},
+		}
+
+		response := client.NewComandoJson(r)
+		require.NotNil(t, response.Result)
+		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+	})
+
+	time.Sleep(2 * time.Second)
 	t.Run("TestComandoDelete", func(t *testing.T) {
 		c := &Engine{}
 		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
@@ -65,8 +82,7 @@ a=sendrecv`
 		}
 
 		response := client.NewComando(r)
-		require.NotNil(t, response.Sdp)
-		fmt.Println(response.Sdp)
+		require.NotNil(t, response.Result)
 		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
 	})
 

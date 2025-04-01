@@ -2,6 +2,7 @@ package rtpengine
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net"
 
@@ -28,16 +29,17 @@ type RequestRtp struct {
 
 // Estrutura da resposta do comando
 type ResponseRtp struct {
-	Result      string      `json:"result" bencode:"result"`
-	Sdp         string      `json:"sdp,omitempty" bencode:"sdp,omitempty"`
-	ErrorReason string      `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
-	Warning     string      `json:"warning,omitempty" bencode:"warning,omitempty"`
-	Created     int         `json:"created,omitempty" bencode:"created,omitempty"`
-	CreatedUs   int         `json:"created_us,omitempty" bencode:"created_us,omitempty"`
-	LastSignal  int         `json:"last signal,omitempty" bencode:"last signal,omitempty"`
-	SSRC        interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
-	Tags        interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
-	Totals      TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
+	Result          string      `json:"result" bencode:"result"`
+	Sdp             string      `json:"sdp,omitempty" bencode:"sdp,omitempty"`
+	ErrorReason     string      `json:"error-reason,omitempty" bencode:"error-reason,omitempty"`
+	Warning         string      `json:"warning,omitempty" bencode:"warning,omitempty"`
+	Created         int         `json:"created,omitempty" bencode:"created,omitempty"`
+	CreatedUs       int         `json:"created_us,omitempty" bencode:"created_us,omitempty"`
+	LastSignal      int         `json:"last signal,omitempty" bencode:"last signal,omitempty"`
+	LastRedisUpdate int         `json:"last redis update,omitempty" bencode:"last redis update,omitempty"`
+	SSRC            interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
+	Tags            interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
+	Totals          TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
 }
 
 type TotalRTP struct {
@@ -52,10 +54,10 @@ type ValuesRTP struct {
 
 // Parametros de comportamento
 type ParamsOptString struct {
-	FromTag                string                 `json:"from-tag" bencode:"from-tag"`
-	ToTag                  string                 `json:"to-tag,omitempty" bencode:"to-tag"`
-	CallId                 string                 `json:"call-id" bencode:"call-id"`
-	TransportProtocol      TransportProtocol      `json:"transport-protocol" bencode:"transport-protocol"`
+	FromTag                string                 `json:"from-tag,omitempty" bencode:"from-tag,omitempty"`
+	ToTag                  string                 `json:"to-tag,omitempty" bencode:"to-tag,omitempty"`
+	CallId                 string                 `json:"call-id,omitempty" bencode:"call-id,omitempty"`
+	TransportProtocol      TransportProtocol      `json:"transport-protocol,omitempty" bencode:"transport-protocol,omitempty"`
 	MediaAddress           string                 `json:"media-address,omitempty" bencode:"media-address,omitempty"`
 	ICE                    ICE                    `json:"ICE,omitempty" bencode:"ICE,omitempty"`
 	AddressFamily          AddressFamily          `json:"address-family,omitempty" bencode:"address-family,omitempty"`
@@ -81,7 +83,7 @@ type ParamsOptString struct {
 	All                    string                 `json:"all,omitempty" bencode:"all,omitempty"`
 	Frequency              string                 `json:"frequency,omitempty" bencode:"frequency,omitempty"`
 	Blob                   string                 `json:"blob,omitempty" bencode:"blob,omitempty"`
-	Sdp                    string                 `json:"sdp" bencode:"sdp"`
+	Sdp                    string                 `json:"sdp,omitempty" bencode:"sdp,omitempty"`
 	AudioPlayer            string                 `json:"audio-player,omitempty" bencode:"audio-player,omitempty"`
 	DTMFLogDest            string                 `json:"dtmf-log-dest,omitempty" bencode:"dtmf-log-dest,omitempty"`
 	OutputDestination      string                 `json:"output-destination,omitempty" bencode:"output-destination,omitempty"`
@@ -188,8 +190,8 @@ func EncodeComando(cookie string, command *RequestRtp) ([]byte, error) {
 	return append(bind, data...), nil
 }
 
-func DecodeResposta(cookie string, resposta []byte) ResponseRtp {
-	resp := ResponseRtp{}
+func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
+	resp := &ResponseRtp{}
 	cookieIndex := bytes.IndexAny(resposta, " ")
 	if cookieIndex != len(cookie) {
 		resp.Result = "error"
@@ -206,6 +208,42 @@ func DecodeResposta(cookie string, resposta []byte) ResponseRtp {
 
 	encodedData := string(resposta[cookieIndex+1:])
 	err := bencode.Unmarshal([]byte(encodedData), resp)
+	if err != nil {
+		return resp
+	}
+
+	return resp
+}
+
+// Trasformar o comando em um json
+func EncodeComandoJson(cookie string, command *RequestRtp) ([]byte, error) {
+	data, err := json.Marshal(command)
+	if err != nil {
+		return nil, err
+	}
+
+	bind := []byte(cookie + " ")
+	return append(bind, data...), nil
+}
+
+func DecodeRespostaJson(cookie string, resposta []byte) *ResponseRtp {
+	resp := &ResponseRtp{}
+	cookieIndex := bytes.IndexAny(resposta, " ")
+	if cookieIndex != len(cookie) {
+		resp.Result = "error"
+		resp.ErrorReason = "Erro ao analisar a mensagem"
+		return resp
+	}
+
+	cookieResponse := string(resposta[:cookieIndex])
+	if cookieResponse != cookie {
+		resp.Result = "error"
+		resp.ErrorReason = "O cookie não corresponde"
+		return resp
+	}
+
+	encodedData := string(resposta[cookieIndex+1:])
+	err := json.Unmarshal([]byte(encodedData), resp)
 
 	if err != nil {
 		return resp
