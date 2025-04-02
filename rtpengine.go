@@ -2,21 +2,24 @@ package rtpengine
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net"
+	"time"
 
 	bencode "github.com/anacrolix/torrent/bencode"
 	"github.com/google/uuid"
+	"github.com/mitchellh/mapstructure"
+	ben "github.com/stefanovazzocell/bencode"
 )
 
 type Engine struct {
-	con   net.Conn
-	ip    net.IP
-	port  int
-	dns   *net.Resolver
-	proto string
-	ng    int
+	con    net.Conn
+	conUDP *net.UDPConn
+	ip     net.IP
+	port   int
+	dns    *net.Resolver
+	proto  string
+	ng     int
 }
 
 // Estrutura da requisicão do comando
@@ -170,12 +173,41 @@ func (r *Engine) GetNG() int {
 func (r *Engine) Conn() (net.Conn, error) {
 	engine := r.ip.String() + ":" + fmt.Sprint(r.port)
 	conn, err := net.Dial(r.proto, engine)
+
 	if err != nil {
 		fmt.Println(err.Error(), r.proto, engine)
 		return nil, err
 	}
+
+	defer net.Dial(r.proto, engine)
+
+	conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+
 	r.con = conn
 	return r.con, nil
+
+}
+
+// Abrir conexão com o proxy rtpengine
+func (r *Engine) ConnUDP() (*net.UDPConn, error) {
+	engine := r.ip.String() + ":" + fmt.Sprint(r.port)
+	addr := &net.UDPAddr{
+		IP:   r.ip,
+		Port: r.port,
+	}
+	conn, err := net.DialUDP(r.proto, nil, addr)
+
+	if err != nil {
+		fmt.Println(err.Error(), r.proto, engine)
+		return nil, err
+	}
+
+	defer net.DialUDP(r.proto, nil, addr)
+	conn.SetReadDeadline(time.Now().Add(time.Minute))
+	conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+
+	r.conUDP = conn
+	return r.conUDP, nil
 
 }
 
@@ -207,47 +239,18 @@ func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
 	}
 
 	encodedData := string(resposta[cookieIndex+1:])
-	err := bencode.Unmarshal([]byte(encodedData), resp)
+	decodedDataRaw, err := ben.NewParserFromString(encodedData).AsDict()
 	if err != nil {
 		return resp
 	}
 
-	return resp
-}
-
-// Trasformar o comando em um json
-func EncodeComandoJson(cookie string, command *RequestRtp) ([]byte, error) {
-	data, err := json.Marshal(command)
-	if err != nil {
-		return nil, err
+	cfg := &mapstructure.DecoderConfig{
+		Metadata: nil,
+		Result:   resp,
+		TagName:  "json",
 	}
-
-	bind := []byte(cookie + " ")
-	return append(bind, data...), nil
-}
-
-func DecodeRespostaJson(cookie string, resposta []byte) *ResponseRtp {
-	resp := &ResponseRtp{}
-	cookieIndex := bytes.IndexAny(resposta, " ")
-	if cookieIndex != len(cookie) {
-		resp.Result = "error"
-		resp.ErrorReason = "Erro ao analisar a mensagem"
-		return resp
-	}
-
-	cookieResponse := string(resposta[:cookieIndex])
-	if cookieResponse != cookie {
-		resp.Result = "error"
-		resp.ErrorReason = "O cookie não corresponde"
-		return resp
-	}
-
-	encodedData := string(resposta[cookieIndex+1:])
-	err := json.Unmarshal([]byte(encodedData), resp)
-
-	if err != nil {
-		return resp
-	}
+	decoder, _ := mapstructure.NewDecoder(cfg)
+	decoder.Decode(decodedDataRaw)
 
 	return resp
 }

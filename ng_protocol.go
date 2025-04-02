@@ -255,5 +255,5 @@ func RtpQuery(parametros *ParamsOptString, options ...ParametrosOption) (*Reques
 }
 
 func RtpQueryExecute(query *RequestRtp, client *Client) *ResponseRtp {
-	return client.NewComandoJson(query)
+	return client.NewComando(query)
 }

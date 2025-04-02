@@ -11,17 +11,28 @@ import (
 func TestClientRequestClientPing(t *testing.T) {
 	t.Run("TestComandoPing", func(t *testing.T) {
 		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		client, err := NewClient(c, WithClientPort(2221), WithClientProto("tcp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		//client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientIP("10.110.0.11"))
 		require.Nil(t, err)
-		require.NotNil(t, client.Engine.con)
+		if client.Engine.conUDP != nil {
+			require.NotNil(t, client.Engine.conUDP)
+		} else {
+			require.NotNil(t, client.Engine.con)
+
+		}
 		r := &RequestRtp{
 			Command: string(Ping),
 		}
-		response := client.NewComando(r)
-		require.NotNil(t, response)
 
-		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
-		c.con.Close()
+		response := client.NewComando(r)
+		client.Close()
+		require.NotNil(t, response.Result)
+		if client.conUDP != nil {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.conUDP.RemoteAddr().String(), "PASS")
+		} else {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+		}
+
 	})
 }
 
@@ -36,7 +47,8 @@ a=sendrecv`
 
 	t.Run("TestComandoOffer", func(t *testing.T) {
 		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		client, err := NewClient(c, WithClientPort(2221), WithClientProto("tcp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		//client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientIP("10.110.0.11"))
 		require.Nil(t, err)
 
 		r := &RequestRtp{
@@ -45,15 +57,22 @@ a=sendrecv`
 			ParamsOptStringArray: &ParamsOptStringArray{Replace: []ParamReplace{Username, SessionName}},
 		}
 		response := client.NewComando(r)
-		require.NotNil(t, response.Result)
+		client.Close()
+
+		require.NotNil(t, response.Sdp)
 		fmt.Println(response.Sdp)
-		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+		if client.conUDP != nil {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.conUDP.RemoteAddr().String(), "PASS")
+		} else {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+		}
 	})
 	time.Sleep(2 * time.Second)
 
 	t.Run("Query", func(t *testing.T) {
 		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		client, err := NewClient(c, WithClientPort(2221), WithClientProto("tcp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		//client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientIP("10.110.0.11"))
 		require.Nil(t, err)
 
 		r := &RequestRtp{
@@ -61,15 +80,28 @@ a=sendrecv`
 			ParamsOptString: &ParamsOptString{CallId: "5464asdas00000000"},
 		}
 
-		response := client.NewComandoJson(r)
+		response := client.NewComando(r)
+		client.Close()
 		require.NotNil(t, response.Result)
-		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+		if tagsMap, ok := response.Tags.(map[string]interface{}); ok {
+			for k, value := range tagsMap {
+				fmt.Println(k, " => ", value)
+				break
+			}
+		}
+
+		if client.conUDP != nil {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.conUDP.RemoteAddr().String(), "PASS")
+		} else {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+		}
 	})
 
 	time.Sleep(2 * time.Second)
 	t.Run("TestComandoDelete", func(t *testing.T) {
 		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		client, err := NewClient(c, WithClientPort(2221), WithClientProto("tcp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		//client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientIP("10.110.0.11"))
 		require.Nil(t, err)
 
 		r := &RequestRtp{
@@ -82,10 +114,15 @@ a=sendrecv`
 		}
 
 		response := client.NewComando(r)
-		require.NotNil(t, response.Result)
-		fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
-	})
+		client.Close()
 
+		require.NotNil(t, response.Result)
+		if client.conUDP != nil {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.conUDP.RemoteAddr().String(), "PASS")
+		} else {
+			fmt.Println("Func:", t.Name(), "Comando:"+r.Command, "Resposta:"+response.Result, "Motivo:", response.ErrorReason, client.con.RemoteAddr().String(), "PASS")
+		}
+	})
 }
 
 //

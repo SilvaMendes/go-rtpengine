@@ -1,10 +1,8 @@
 package rtpengine
 
 import (
-	"bufio"
 	"context"
 	"net"
-	"net/textproto"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -27,7 +25,7 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 		url:     rtpengine.GetIP().String(),
 		port:    rtpengine.GetPort(),
 		log:     log.Logger.With().Str("Client", "RTPEngine").Logger(),
-		timeout: 5 * time.Second,
+		timeout: 10 * time.Second,
 	}
 
 	for _, o := range options {
@@ -40,8 +38,14 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 		c.ip = net.ParseIP(c.url)
 	}
 
-	if _, err := c.Engine.Conn(); err != nil {
-		c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+	if c.Engine.proto == "udp" {
+		if _, err := c.Engine.ConnUDP(); err != nil {
+			c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+		}
+	} else {
+		if _, err := c.Engine.Conn(); err != nil {
+			c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+		}
 	}
 
 	return c, nil
@@ -105,7 +109,11 @@ func WithClientProto(proto string) ClientOption {
 
 // Fechar conexão aberta.
 func (s *Client) Close() error {
-	return s.con.Close()
+	if s.conUDP != nil {
+		return s.conUDP.Close()
+	} else {
+		return s.con.Close()
+	}
 }
 
 func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
@@ -116,12 +124,13 @@ func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 		return nil
 	}
 
-	Resposta, err := c.RespostaNG(cookie)
+	resposta, err := c.RespostaNG(cookie)
 
 	if err != nil {
 		return nil
 	}
-	return Resposta
+
+	return resposta
 }
 
 // Comando NG formatado em bencode para rtpengine
@@ -132,70 +141,33 @@ func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 	}
 
 	c.log.Debug().Msg("cookie: " + cookie + " Comando: " + comando.Command)
-
-	if _, err := c.con.Write(menssagem); err != nil {
-		return err
+	if c.conUDP != nil {
+		if _, err := c.conUDP.Write(menssagem); err != nil {
+			return err
+		}
+	} else {
+		if _, err := c.con.Write(menssagem); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
 // Resposta do servidor ngcp-rtpengine
 func (c *Client) RespostaNG(cookie string) (*ResponseRtp, error) {
-	c.con.SetReadDeadline(time.Now().Add(c.timeout))
 	respostaRaw := make([]byte, 65536)
-
-	_, err := c.con.Read(respostaRaw)
-	if err != nil {
-		return nil, err
+	var err error
+	if c.conUDP != nil {
+		_, err = c.conUDP.Read(respostaRaw)
+	} else {
+		_, err = c.con.Read(respostaRaw)
 	}
-
-	resposta := DecodeResposta(cookie, respostaRaw)
-	return resposta, nil
-}
-
-func (c *Client) NewComandoJson(comando *RequestRtp) *ResponseRtp {
-	cookie := c.GetCookie()
-	err := c.ComandoNGJson(cookie, comando)
-
-	if err != nil {
-		return nil
-	}
-
-	Resposta, err := c.RespostaNGJson(cookie)
-
-	if err != nil {
-		return nil
-	}
-	return Resposta
-}
-
-// Comando NG formatado em json para rtpengine
-func (c *Client) ComandoNGJson(cookie string, comando *RequestRtp) error {
-	menssagem, err := EncodeComandoJson(cookie, comando)
-	if err != nil {
-		return err
-	}
-
-	c.log.Debug().Msg("Comando: " + comando.Command)
-
-	if _, err := c.con.Write(menssagem); err != nil {
-		return err
-	}
-	return nil
-}
-
-// Resposta do servidor ngcp-rtpengine json
-func (c *Client) RespostaNGJson(cookie string) (*ResponseRtp, error) {
-	c.con.SetReadDeadline(time.Now().Add(c.timeout))
-
-	reader := bufio.NewReader(c.con)
-	tp := textproto.NewReader(reader)
-	respostaRaw, err := tp.ReadLine()
 
 	if err != nil {
 		return nil, err
 	}
 
-	resposta := DecodeRespostaJson(cookie, []byte(respostaRaw))
+	resposta := DecodeResposta(cookie, []byte(respostaRaw))
 	return resposta, nil
 }
