@@ -169,5 +169,6 @@ func (c *Client) RespostaNG(cookie string) (*ResponseRtp, error) {
 	}
 
 	resposta := DecodeResposta(cookie, []byte(respostaRaw))
+	c.ResponseRtp = resposta
 	return resposta, nil
 }

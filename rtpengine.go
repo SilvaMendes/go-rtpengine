@@ -20,6 +20,7 @@ type Engine struct {
 	dns    *net.Resolver
 	proto  string
 	ng     int
+	*ResponseRtp
 }
 
 // Estrutura da requisicão do comando
