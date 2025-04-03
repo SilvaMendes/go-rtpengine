@@ -15,7 +15,6 @@ type Client struct {
 	port    int
 	log     zerolog.Logger
 	timeout time.Duration
-	*ResponseRtp
 }
 
 type ClientOption func(c *Client) error
@@ -119,20 +118,20 @@ func (s *Client) Close() error {
 
 func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 	cookie := c.GetCookie()
-	//resposta := &ResponseRtp{}
+	resposta := &ResponseRtp{}
 	err := c.ComandoNG(cookie, comando)
 
 	if err != nil {
-		return c.ResponseRtp
+		return resposta
 	}
 
-	c.ResponseRtp, err = c.RespostaNG(cookie)
+	resposta, err = c.RespostaNG(cookie)
 
 	if err != nil {
-		return c.ResponseRtp
+		return resposta
 	}
 
-	return c.ResponseRtp
+	return resposta
 }
 
 // Comando NG formatado em bencode para rtpengine
@@ -160,17 +159,19 @@ func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 func (c *Client) RespostaNG(cookie string) (*ResponseRtp, error) {
 	respostaRaw := make([]byte, 65536)
 	var err error
-	//resposta := &ResponseRtp{}
+	resposta := &ResponseRtp{}
 	if c.conUDP != nil {
+		time.Sleep(1 * time.Second)
 		_, err = c.conUDP.Read(respostaRaw)
 	} else {
+		time.Sleep(1 * time.Second)
 		_, err = c.con.Read(respostaRaw)
 	}
 
 	if err != nil {
-		return c.ResponseRtp, err
+		return resposta, err
 	}
 
-	c.ResponseRtp = DecodeResposta(cookie, []byte(respostaRaw))
-	return c.ResponseRtp, nil
+	resposta = DecodeResposta(cookie, []byte(respostaRaw))
+	return resposta, nil
 }

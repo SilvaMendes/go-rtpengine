@@ -87,7 +87,6 @@ a=sendrecv`
 		if tagsMap, ok := response.Tags.(map[string]interface{}); ok {
 			for k, value := range tagsMap {
 				fmt.Println(k, " => ", value)
-				break
 			}
 		}
 
