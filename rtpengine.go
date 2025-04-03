@@ -20,7 +20,6 @@ type Engine struct {
 	dns    *net.Resolver
 	proto  string
 	ng     int
-	*ResponseRtp
 }
 
 // Estrutura da requisicão do comando
@@ -223,8 +222,8 @@ func EncodeComando(cookie string, command *RequestRtp) ([]byte, error) {
 	return append(bind, data...), nil
 }
 
-func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
-	resp := &ResponseRtp{}
+func DecodeResposta(cookie string, resposta []byte) ResponseRtp {
+	resp := ResponseRtp{}
 	cookieIndex := bytes.IndexAny(resposta, " ")
 	if cookieIndex != len(cookie) {
 		resp.Result = "error"
@@ -247,11 +246,10 @@ func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
 
 	cfg := &mapstructure.DecoderConfig{
 		Metadata: nil,
-		Result:   resp,
+		Result:   &resp,
 		TagName:  "json",
 	}
 	decoder, _ := mapstructure.NewDecoder(cfg)
 	decoder.Decode(decodedDataRaw)
-
 	return resp
 }

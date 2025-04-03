@@ -82,6 +82,7 @@ a=sendrecv`
 
 		response := client.NewComando(r)
 		client.Close()
+
 		require.NotNil(t, response.Result)
 		if tagsMap, ok := response.Tags.(map[string]interface{}); ok {
 			for k, value := range tagsMap {
