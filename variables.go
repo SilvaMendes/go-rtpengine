@@ -306,9 +306,19 @@ const (
 	AddressFamilyIP6 AddressFamily = "IP6"
 )
 
-// Tipo Address Family string
+// Tipo connection string
 type Connection string
 
 const (
 	MohConnection Connection = "zero"
+)
+
+// Tipo record string
+type Record string
+
+const (
+	RecordYes Record = "yes"
+	RecordNo  Record = "no"
+	RecordOn  Record = "on"
+	RecordOff Record = "off"
 )

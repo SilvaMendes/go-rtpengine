@@ -236,3 +236,42 @@ func (c *RequestRtp) SetMediaAddress(Address string) ParametrosOption {
 		return nil
 	}
 }
+
+func (c *RequestRtp) SetRecord(record []Record) ParametrosOption {
+	return func(s *RequestRtp) error {
+		record := make([]ParamFlags, 0)
+		for _, o := range record {
+			record = append(record, ParamFlags("record-call="+o))
+		}
+		s.ParamsOptStringArray.Flags = append(s.ParamsOptStringArray.Flags, record...)
+		return nil
+	}
+}
+
+func (c *RequestRtp) RecordYes() ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.RecordCall = "yes"
+		return nil
+	}
+}
+
+func (c *RequestRtp) RecordNo() ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.RecordCall = "no"
+		return nil
+	}
+}
+
+func (c *RequestRtp) RecordOn() ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.RecordCall = "on"
+		return nil
+	}
+}
+
+func (c *RequestRtp) RecordOff() ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.RecordCall = "off"
+		return nil
+	}
+}

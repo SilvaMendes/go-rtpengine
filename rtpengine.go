@@ -99,6 +99,7 @@ type ParamsOptString struct {
 	RtppFlags              string                 `json:"rtpp-flags,omitempty" bencode:"rtpp-flags,omitempty"`
 	SdpAttr                *ParamsSdpAttrSections `json:"sdp-attr,omitempty" bencode:"sdp-attr,omitempty"`
 	Template               string                 `json:"template,omitempty" bencode:"template,omitempty"`
+	RecordCall             Record                 `json:"record-call,omitempty" bencode:"record-call,omitempty"`
 }
 
 // Parametros de comportamento tipo inteiro
