@@ -98,6 +98,7 @@ type ParamsOptString struct {
 	VscStartPauseResumeRec string                 `json:"vsc-start-pause-resume-rec,omitempty" bencode:"vsc-start-pause-resume-rec,omitempty"`
 	RtppFlags              string                 `json:"rtpp-flags,omitempty" bencode:"rtpp-flags,omitempty"`
 	SdpAttr                *ParamsSdpAttrSections `json:"sdp-attr,omitempty" bencode:"sdp-attr,omitempty"`
+	Template               string                 `json:"template,omitempty" bencode:"template,omitempty"`
 }
 
 // Parametros de comportamento tipo inteiro
@@ -127,6 +128,7 @@ type ParamsOptStringArray struct {
 	FromTags     []string       `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
 	Frequencies  []string       `json:"frequencies,omitempty" bencode:"frequencies,omitempty"`
 	Replace      []ParamReplace `json:"replace,omitempty" bencode:"replace,omitempty"`
+	Moh          []ParamMoh     `json:"moh,omitempty" bencode:"moh,omitempty"`
 }
 
 // Parametros de manipulação de sessão
@@ -142,6 +144,15 @@ type ParamsSdpAttrCommands struct {
 	Add        []string   `json:"add,omitempty" bencode:"add,omitempty"`
 	Remove     []string   `json:"remove,omitempty" bencode:"remove,omitempty"`
 	Substitute [][]string `json:"substitute,omitempty" bencode:"substitute,omitempty"`
+}
+
+// Atributos do moh
+type ParamMoh struct {
+	File       string     `json:"file,omitempty" bencode:"file,omitempty"`
+	Blob       string     `json:"blob,omitempty" bencode:"blob,omitempty"`
+	DbId       string     `json:"db-id,omitempty" bencode:"db-id,omitempty"`
+	Mode       string     `json:"mode,omitempty" bencode:"mode,omitempty"`
+	Connection Connection `json:"connection,omitempty" bencode:"connection,omitempty"`
 }
 
 // Gera o cookie do comando

@@ -305,3 +305,10 @@ const (
 	AddressFamilyIP4 AddressFamily = "IP4"
 	AddressFamilyIP6 AddressFamily = "IP6"
 )
+
+// Tipo Address Family string
+type Connection string
+
+const (
+	MohConnection Connection = "zero"
+)
