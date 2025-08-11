@@ -107,6 +107,14 @@ func WithClientProto(proto string) ClientOption {
 	}
 }
 
+// WithClientTimeout Permite definir o tempo  de timeout da conexão do client
+func WithClientTimeout(t int) ClientOption {
+	return func(s *Client) error {
+		s.timeout = time.Duration(time.Duration(t).Seconds())
+		return nil
+	}
+}
+
 // Fechar conexão aberta.
 func (s *Client) Close() error {
 	if s.conUDP != nil {
