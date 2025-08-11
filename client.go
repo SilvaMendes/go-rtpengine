@@ -110,7 +110,7 @@ func WithClientProto(proto string) ClientOption {
 // WithClientTimeout Permite definir o tempo  de timeout da conexão do client
 func WithClientTimeout(t int) ClientOption {
 	return func(s *Client) error {
-		s.timeout = time.Duration(time.Duration(t).Seconds())
+		s.timeout = time.Duration(time.Duration(t).Milliseconds())
 		return nil
 	}
 }
