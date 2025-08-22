@@ -24,7 +24,7 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 		Engine:  rtpengine,
 		url:     rtpengine.GetIP().String(),
 		port:    rtpengine.GetPort(),
-		log:     log.Logger.With().Str("Client", "RTPEngine").Logger().Level(zerolog.InfoLevel),
+		log:     log.Logger.With().Str("Client", "RTPEngine").Logger(),
 		timeout: 10 * time.Second,
 	}
 
@@ -49,7 +49,7 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 			return c, err
 		}
 	}
-
+	c.log = c.log.Level(zerolog.InfoLevel)
 	return c, nil
 }
 
