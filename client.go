@@ -118,7 +118,7 @@ func WithClientTimeout(t int) ClientOption {
 }
 
 func (s *Client) SetLogLevel(level int8) {
-	s.log = log.Logger.Level(zerolog.Level(level))
+	s.log.Level(zerolog.Level(level))
 }
 
 // Fechar conexão aberta.
