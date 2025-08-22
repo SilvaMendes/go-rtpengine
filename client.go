@@ -41,10 +41,12 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 	if c.Engine.proto == "udp" {
 		if _, err := c.Engine.ConnUDP(); err != nil {
 			c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+			return c, err
 		}
 	} else {
 		if _, err := c.Engine.Conn(); err != nil {
 			c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+			return c, err
 		}
 	}
 
