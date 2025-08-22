@@ -24,7 +24,7 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 		Engine:  rtpengine,
 		url:     rtpengine.GetIP().String(),
 		port:    rtpengine.GetPort(),
-		log:     log.Logger.With().Str("Client", "RTPEngine").Logger(),
+		log:     log.Logger.With().Str("Client", "RTPEngine").Logger().Level(zerolog.InfoLevel),
 		timeout: 10 * time.Second,
 	}
 
@@ -115,6 +115,10 @@ func WithClientTimeout(t int) ClientOption {
 		s.timeout = time.Duration(time.Duration(t).Milliseconds())
 		return nil
 	}
+}
+
+func (s *Client) SetLogLevel(level int8) {
+	s.log = log.Logger.Level(zerolog.Level(level))
 }
 
 // Fechar conexão aberta.
