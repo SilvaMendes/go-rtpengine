@@ -9,6 +9,7 @@ import (
 	bencode "github.com/anacrolix/torrent/bencode"
 	"github.com/google/uuid"
 	"github.com/mitchellh/mapstructure"
+	"github.com/rs/zerolog/log"
 	ben "github.com/stefanovazzocell/bencode"
 )
 
@@ -187,7 +188,7 @@ func (r *Engine) Conn() (net.Conn, error) {
 	conn, err := net.Dial(r.proto, engine)
 
 	if err != nil {
-		fmt.Println(err.Error(), r.proto, engine)
+		log.Debug().Str("Debug ", r.proto+" "+engine).Msg(err.Error())
 		return nil, err
 	}
 
@@ -210,7 +211,7 @@ func (r *Engine) ConnUDP() (*net.UDPConn, error) {
 	conn, err := net.DialUDP(r.proto, nil, addr)
 
 	if err != nil {
-		fmt.Println(err.Error(), r.proto, engine)
+		log.Debug().Str("Debug ", r.proto+" "+engine).Msg(err.Error())
 		return nil, err
 	}
 
