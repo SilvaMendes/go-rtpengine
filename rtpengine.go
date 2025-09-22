@@ -43,6 +43,9 @@ type ResponseRtp struct {
 	LastRedisUpdate int         `json:"last redis update,omitempty" bencode:"last redis update,omitempty"`
 	SSRC            interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
 	Tags            interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
+	FromTag         string      `json:"from-tag,omitempty" bencode:"from-tag,omitempty"`
+	FromTags        string      `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
+	ToTag           string      `json:"to-tag,omitempty" bencode:"to-tag,omitempty"`
 	Totals          TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
 }
 
