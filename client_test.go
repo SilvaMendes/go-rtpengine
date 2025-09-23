@@ -27,7 +27,6 @@ func TestClientRequestNewClientWithClientHostname(t *testing.T) {
 			ip: net.ParseIP("10.0.0.0"),
 		},
 		WithClientHostname("L5NB-JGZXMF3"),
-		//WithClientHostname("DESKTOP-QJ365M6"),
 		WithClientProto("udp"))
 
 	require.Nil(t, err)
