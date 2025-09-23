@@ -1,3 +1,21 @@
+// Package rtpengine provides functionality for interacting with an RTP engine proxy,
+// including connection management, command encoding/decoding, and parameter structures
+// for RTP session control.
+//
+// It defines types for requests and responses, as well as various parameter structs
+// for configuring RTP engine operations. The package supports both TCP and UDP connections
+// and uses bencode for message serialization.
+//
+// Main types and functions:
+//   - Engine: Manages connection and configuration to the RTP engine proxy.
+//   - RequestRtp, ResponseRtp: Structures for command requests and responses.
+//   - ParamsOptString, ParamsOptInt, ParamsOptStringArray: Parameter structs for RTP operations.
+//   - Conn, ConnUDP: Methods to open TCP/UDP connections to the RTP engine.
+//   - EncodeComando: Encodes a command request with a cookie using bencode.
+//   - DecodeResposta: Decodes a response from the RTP engine, validating the cookie.
+//
+// The package relies on external libraries for bencode serialization, UUID generation,
+// structured logging, and mapstructure decoding.
 package rtpengine
 
 import (
@@ -13,6 +31,8 @@ import (
 	ben "github.com/stefanovazzocell/bencode"
 )
 
+// Engine represents a network engine that manages connections and communication parameters.
+// It holds TCP and UDP connections, IP address, port, DNS resolver, protocol type, and a numeric identifier.
 type Engine struct {
 	con    net.Conn
 	conUDP *net.UDPConn
@@ -24,6 +44,11 @@ type Engine struct {
 }
 
 // Estrutura da requisicão do comando
+// RequestRtp represents a request to the RTP engine, containing the command to be executed
+// and optional parameters. The struct embeds ParamsOptString, ParamsOptInt, and ParamsOptStringArray
+// to allow flexible inclusion of string, integer, and string array options respectively.
+// The Command field specifies the action for the RTP engine, and is serialized using both
+// JSON and Bencode formats.
 type RequestRtp struct {
 	Command string `json:"command" bencode:"command"`
 	*ParamsOptString
@@ -32,6 +57,10 @@ type RequestRtp struct {
 }
 
 // Estrutura da resposta do comando
+// ResponseRtp represents the response structure from the RTP engine.
+// It contains information about the result, SDP, error and warning messages,
+// timestamps, SSRC, tags, and other metadata related to RTP processing.
+// Fields are annotated for both JSON and Bencode serialization.
 type ResponseRtp struct {
 	Result          string      `json:"result" bencode:"result"`
 	Sdp             string      `json:"sdp,omitempty" bencode:"sdp,omitempty"`
@@ -53,6 +82,7 @@ type TotalRTP struct {
 	Rtp  ValuesRTP `json:"RTP,omitempty" bencode:"RTP,omitempty"`
 	Rtcp ValuesRTP `json:"RCTP,omitempty" bencode:"RTP,omitempty"`
 }
+
 type ValuesRTP struct {
 	Packets int `json:"packets,omitempty" bencode:"packets,omitempty"`
 	Bytes   int `json:"bytes,omitempty" bencode:"bytes,omitempty"`
@@ -60,6 +90,10 @@ type ValuesRTP struct {
 }
 
 // Parametros de comportamento
+// ParamsOptString defines a set of optional parameters for RTP engine operations.
+// Each field represents a configurable option that can be serialized to JSON or bencode formats.
+// The struct includes tags for both serialization formats and supports various RTP-related settings,
+// such as transport protocol, media address, ICE, DTLS, metadata, DTMF, SDP attributes, recording options, and more.
 type ParamsOptString struct {
 	FromTag                string                 `json:"from-tag,omitempty" bencode:"from-tag,omitempty"`
 	ToTag                  string                 `json:"to-tag,omitempty" bencode:"to-tag,omitempty"`
