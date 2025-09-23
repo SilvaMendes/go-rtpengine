@@ -264,3 +264,10 @@ func (c *RequestRtp) RecordOff() ParametrosOption {
 		return nil
 	}
 }
+
+func (c *RequestRtp) SetMohFile(file string) ParametrosOption {
+	return func(s *RequestRtp) error {
+		s.Moh = append(s.Moh, ParamMoh{File: file, Mode: "sendonly"})
+		return nil
+	}
+}
