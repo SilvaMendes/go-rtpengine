@@ -71,8 +71,7 @@ type ResponseRtp struct {
 	SSRC            interface{} `json:"SSRC,omitempty" bencode:"SSRC,omitempty"`
 	Tags            interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
 	FromTag         string      `json:"from-tag,omitempty" bencode:"from-tag,omitempty"`
-	FromTags        string      `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
-	TagMedias       string      `json:"tag-medias,omitempty" bencode:"tag-medias,omitempty"`
+	FromTags        []string    `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
 	ToTag           string      `json:"to-tag,omitempty" bencode:"to-tag,omitempty"`
 	Totals          TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
 }
@@ -288,6 +287,7 @@ func DecodeResposta(cookie string, resposta []byte) *ResponseRtp {
 
 	encodedData := string(resposta[cookieIndex+1:])
 	decodedDataRaw, err := ben.NewParserFromString(encodedData).AsDict()
+
 	if err != nil {
 		return resp
 	}
