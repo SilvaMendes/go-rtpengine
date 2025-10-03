@@ -1,6 +1,33 @@
+/*
+Package rtpengine
+
+This file defines several types and constants used for RTP (Real-time Transport Protocol) session management and configuration.
+
+Types and Constants:
+
+- TransportProtocol: Supported transport protocols (e.g., RTP/AVP, RTP/SAVP).
+- TypeCommands: Possible commands for RTP session control (e.g., offer, answer, delete).
+- DtlsHash: Supported DTLS hash algorithms.
+- CryptoSuite: Supported SRTP crypto suites.
+- ParamReplace: SDP session parameters that can be replaced.
+- ParamFlags: Flags that modify RTP session behavior.
+- ParamRTCPMux: RTCP multiplexing options.
+- Codecs: Supported audio codecs.
+- ICE: ICE negotiation options.
+- DTLS: DTLS operation modes.
+- DTLSReverse: Reverse DTLS modes.
+- DTLSFingerprint: DTLS fingerprint algorithms.
+- SDES: SDES negotiation options.
+- OSRTP: OSRTP operation modes.
+- AddressFamily: Supported address families (IPv4/IPv6).
+- Connection: Connection types (e.g., zero for music on hold).
+- Record: Call recording options.
+
+Each type is defined as a string and has constants representing valid values for use in RTP engine operations.
+*/
+
 package rtpengine
 
-// Definição do Protocolo de Transporte do SDP
 type TransportProtocol string
 
 const (
@@ -12,39 +39,37 @@ const (
 	UDP_TLS_RTP_SAVPF TransportProtocol = "UDP/TLS/RTP/SAVPF"
 )
 
-// Definição dos comandos aceitos
-
-type TipoComandos string
+type TypeCommands string
 
 const (
-	Ping             TipoComandos = "ping"
-	Offer            TipoComandos = "offer"
-	Answer           TipoComandos = "answer"
-	Delete           TipoComandos = "delete"
-	Query            TipoComandos = "query"
-	List             TipoComandos = "list"
-	StartRecording   TipoComandos = "start recording"
-	StopRecording    TipoComandos = "stop recording"
-	PauseRecording   TipoComandos = "pause recording"
-	BlockDTMF        TipoComandos = "block DTMF"
-	UnblockDTMF      TipoComandos = "unblock DTMF"
-	BlockMedia       TipoComandos = "block media"
-	UnblockMedia     TipoComandos = "unblock media"
-	SilenceMedia     TipoComandos = "silence media"
-	UnsilenceMedia   TipoComandos = "unsilence media"
-	StartForwarding  TipoComandos = "start forwarding"
-	StopForwarding   TipoComandos = "stop forwarding"
-	PlayMedia        TipoComandos = "play media"
-	StopMedia        TipoComandos = "stop media"
-	PlayDTMF         TipoComandos = "play DTMF"
-	Statistics       TipoComandos = "statistics"
-	Publish          TipoComandos = "publish"
-	SubscribeRequest TipoComandos = "subscribe request"
-	SubscribeAnswer  TipoComandos = "subscribe answer"
-	Unsubscribe      TipoComandos = "unsubscribe"
+	Ping             TypeCommands = "ping"
+	Offer            TypeCommands = "offer"
+	Answer           TypeCommands = "answer"
+	Delete           TypeCommands = "delete"
+	Query            TypeCommands = "query"
+	List             TypeCommands = "list"
+	StartRecording   TypeCommands = "start recording"
+	StopRecording    TypeCommands = "stop recording"
+	PauseRecording   TypeCommands = "pause recording"
+	BlockDTMF        TypeCommands = "block DTMF"
+	UnblockDTMF      TypeCommands = "unblock DTMF"
+	BlockMedia       TypeCommands = "block media"
+	UnblockMedia     TypeCommands = "unblock media"
+	SilenceMedia     TypeCommands = "silence media"
+	UnsilenceMedia   TypeCommands = "unsilence media"
+	StartForwarding  TypeCommands = "start forwarding"
+	StopForwarding   TypeCommands = "stop forwarding"
+	PlayMedia        TypeCommands = "play media"
+	StopMedia        TypeCommands = "stop media"
+	PlayDTMF         TypeCommands = "play DTMF"
+	Statistics       TypeCommands = "statistics"
+	Publish          TypeCommands = "publish"
+	SubscribeRequest TypeCommands = "subscribe request"
+	SubscribeAnswer  TypeCommands = "subscribe answer"
+	Unsubscribe      TypeCommands = "unsubscribe"
+	Connect          TypeCommands = "connect"
 )
 
-// Definição dos tipo dtls
 type DtlsHash string
 
 const (
@@ -55,7 +80,6 @@ const (
 	Sha512 DtlsHash = "sha-512"
 )
 
-// Tipo de parametros para o CryptoSuite
 type CryptoSuite string
 
 const (
@@ -73,13 +97,12 @@ const (
 	SRTP_NULL_HMAC_SHA1_32        CryptoSuite = "NULL_HMAC_SHA1_32"
 )
 
-// Tipo de parametros para o replace
 type ParamReplace string
 
 const (
-	Origin     ParamReplace = "origin"
-	OriginFull ParamReplace = "origin-full"
 	// DEPRECADO replace-session-connection flag encountered, but not supported anymore
+	Origin                   ParamReplace = "origin"
+	OriginFull               ParamReplace = "origin-full"
 	SessionConnection        ParamReplace = "session-connection"
 	SdpVersion               ParamReplace = "SDP-version"
 	Username                 ParamReplace = "username"
@@ -89,7 +112,6 @@ const (
 	ForceIncrementSdpVer     ParamReplace = "force-increment-sdp-ver"
 )
 
-// Tipo de parametros usado como flags
 type ParamFlags string
 
 const (
@@ -176,7 +198,6 @@ const (
 	CodecTranscodeSpeex   ParamFlags = "codec-transcode-speex"
 )
 
-// Tipo de parametros usado no rtcp-mux
 type ParamRTCPMux string
 
 const (
@@ -187,7 +208,6 @@ const (
 	RTCPReject  ParamRTCPMux = "reject"
 )
 
-// Tipo de string codecs
 type Codecs string
 
 const (
@@ -202,7 +222,6 @@ const (
 	CODEC_SPEEX Codecs = "speex"
 )
 
-// Tipo de string ICE
 type ICE string
 
 const (
@@ -213,7 +232,6 @@ const (
 	ICEOptional   ICE = "optional"
 )
 
-// Tipo de string DTLS
 type DTLS string
 
 const (
@@ -224,7 +242,6 @@ const (
 	DTLSActive  DTLS = "active"
 )
 
-// Tipo DTLS reverso string
 type DTLSReverse string
 
 const (
@@ -232,7 +249,6 @@ const (
 	DTLSReverseActive  DTLSReverse = "active"
 )
 
-// Tipo DTLS-fingerprint string
 type DTLSFingerprint string
 
 const (
@@ -243,7 +259,6 @@ const (
 	DTLSFingerprintSha512 DTLSFingerprint = "sha-512"
 )
 
-// Tipo SDES string
 type SDES string
 
 const (
@@ -286,7 +301,6 @@ const (
 	SDESOnlyNULL_HMAC_SHA1_32       SDES = "only-NULL_HMAC_SHA1_32"
 )
 
-// Tipo OSRTP string
 type OSRTP string
 
 const (
@@ -298,7 +312,6 @@ const (
 	OSRTPAccept       OSRTP = "accept"
 )
 
-// Tipo Address Family string
 type AddressFamily string
 
 const (
@@ -306,14 +319,12 @@ const (
 	AddressFamilyIP6 AddressFamily = "IP6"
 )
 
-// Tipo connection string
 type Connection string
 
 const (
 	MohConnection Connection = "zero"
 )
 
-// Tipo record string
 type Record string
 
 const (
