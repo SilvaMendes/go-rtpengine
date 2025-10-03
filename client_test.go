@@ -26,7 +26,7 @@ func TestClientRequestNewClientWithClientHostname(t *testing.T) {
 		&Engine{
 			ip: net.ParseIP("10.0.0.0"),
 		},
-		WithClientHostname("L5NB-JGZXMF3"),
+		WithClientHostname("lab01"),
 		WithClientProto("udp"))
 
 	require.Nil(t, err)
@@ -39,7 +39,7 @@ func TestClientRequestNewClienWithClientDns(t *testing.T) {
 		&Engine{
 			ip: net.ParseIP("10.0.0.0"),
 		},
-		WithClientDns("webrtcsrvgcp.callbox.com.br"),
+		WithClientDns("rtp1"),
 		WithClientProto("udp"))
 
 	require.Nil(t, err)
@@ -50,7 +50,7 @@ func TestClientRequestNewClienWithClientDns(t *testing.T) {
 func TestClientRequestClientOption(t *testing.T) {
 	t.Run("TestClientDNS", func(t *testing.T) {
 		c := &Engine{}
-		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("webrtcsrvgcp.callbox.com.br"))
+		client, err := NewClient(c, WithClientPort(2222), WithClientProto("udp"), WithClientDns("rtp1"))
 		require.Nil(t, err)
 		require.NotNil(t, client.Engine.con)
 		fmt.Println("Func:", t.Name(), "Valor:", client.con.RemoteAddr().String(), "PASS")
@@ -59,7 +59,7 @@ func TestClientRequestClientOption(t *testing.T) {
 
 	t.Run("TestClientIP", func(t *testing.T) {
 		b := &Engine{}
-		clt, err := NewClient(b, WithClientPort(2222), WithClientProto("udp"), WithClientIP("35.198.31.42"))
+		clt, err := NewClient(b, WithClientPort(2222), WithClientProto("udp"), WithClientIP("192.168.18.35"))
 		require.Nil(t, err)
 		require.NotNil(t, clt.Engine.con)
 		fmt.Println("Func:", t.Name(), "Valor:", clt.con.RemoteAddr().String(), "PASS")

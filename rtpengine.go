@@ -43,7 +43,6 @@ type Engine struct {
 	ng     int
 }
 
-// Estrutura da requisicão do comando
 // RequestRtp represents a request to the RTP engine, containing the command to be executed
 // and optional parameters. The struct embeds ParamsOptString, ParamsOptInt, and ParamsOptStringArray
 // to allow flexible inclusion of string, integer, and string array options respectively.
@@ -56,7 +55,6 @@ type RequestRtp struct {
 	*ParamsOptStringArray
 }
 
-// Estrutura da resposta do comando
 // ResponseRtp represents the response structure from the RTP engine.
 // It contains information about the result, SDP, error and warning messages,
 // timestamps, SSRC, tags, and other metadata related to RTP processing.
@@ -74,6 +72,7 @@ type ResponseRtp struct {
 	Tags            interface{} `json:"tags,omitempty" bencode:"tags,omitempty"`
 	FromTag         string      `json:"from-tag,omitempty" bencode:"from-tag,omitempty"`
 	FromTags        string      `json:"from-tags,omitempty" bencode:"from-tags,omitempty"`
+	TagMedias       string      `json:"tag-medias,omitempty" bencode:"tag-medias,omitempty"`
 	ToTag           string      `json:"to-tag,omitempty" bencode:"to-tag,omitempty"`
 	Totals          TotalRTP    `json:"totals,omitempty" bencode:"totals,omitempty"`
 }
@@ -89,7 +88,6 @@ type ValuesRTP struct {
 	Errors  int `json:"errors,omitempty" bencode:"errors,omitempty"`
 }
 
-// Parametros de comportamento
 // ParamsOptString defines a set of optional parameters for RTP engine operations.
 // Each field represents a configurable option that can be serialized to JSON or bencode formats.
 // The struct includes tags for both serialization formats and supports various RTP-related settings,

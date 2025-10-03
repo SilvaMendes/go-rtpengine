@@ -1,3 +1,5 @@
 /.vscode
 /go.work
 /.old
+/client_test.go
+/ng_protocol_test.go
