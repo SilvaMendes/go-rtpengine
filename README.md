@@ -1,6 +1,6 @@
 # go-rtpengine
 
-**go-rtpengine** is a Go library that provides bindings and utilities to interact with the [RTPengine](https://github.com/sipwise/rtpengine), a media proxy used in VoIP infrastructures such as Kamailio. This project aims to simplify the integration of RTPengine's NG protocol into Go-based applications.
+**go-rtpengine** is a Go library that provides bindings and utilities to interact with the [RTPengine](https://github.com/sipwise/rtpengine), a media proxy used in VoIP infrastructures such as Kamailio/Opensips. This project aims to simplify the integration of RTPengine's NG protocol into Go-based applications.
 
 ## Installation
 ``
@@ -24,8 +24,9 @@ go get github.com/SilvaMendes/go-rtpengine
 
 Import the package and use the `Engine` struct to manage RTPengine connections and send commands.
 
-
+``
 import "github.com/SilvaMendes/go-rtpengine"
+``
 
 ### Example: 
 ```
