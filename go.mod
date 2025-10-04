@@ -1,6 +1,6 @@
 module github.com/SilvaMendes/go-rtpengine
 
-go 1.25.1
+go 1.25
 
 require (
 	github.com/anacrolix/torrent v1.59.1
