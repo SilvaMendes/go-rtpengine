@@ -9,16 +9,32 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Client represents a network client that interacts with an underlying Engine.
+// It encapsulates connection details, logging capabilities, and timeout configurations.
 type Client struct {
-	*Engine
-	url     string
-	port    int
-	log     zerolog.Logger
-	timeout time.Duration
+	*Engine                // Embedded Engine instance providing core functionalities.
+	url     string         // Base URL of the remote service to connect to.
+	port    int            // Port number used for the connection.
+	log     zerolog.Logger // Logger instance for structured logging and diagnostics.
+	timeout time.Duration  // Maximum duration allowed for operations before timing out.
 }
 
+// ClientOption defines a function type that modifies a Client instance.
+// It allows for flexible configuration of the Client during initialization.
+// Each option function receives a pointer to the Client and returns an error if the configuration fails.
 type ClientOption func(c *Client) error
 
+// NewClient creates and initializes a new Client instance using the provided Engine and optional configuration functions.
+// It sets default values for the URL, port, logger, and timeout, and applies any additional ClientOption functions.
+// It also establishes a connection based on the protocol defined in the Engine.
+//
+// Parameters:
+//   - rtpengine: Pointer to an Engine instance used by the Client.
+//   - options: Variadic list of ClientOption functions for custom configuration.
+//
+// Returns:
+//   - *Client: A pointer to the initialized Client instance.
+//   - error: An error if any configuration or connection step fails.
 func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 	c := &Client{
 		Engine:  rtpengine,
@@ -40,20 +56,29 @@ func NewClient(rtpengine *Engine, options ...ClientOption) (*Client, error) {
 
 	if c.Engine.proto == "udp" {
 		if _, err := c.Engine.ConnUDP(); err != nil {
-			c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+			c.log.Warn().Msg("Error connecting to RTP engine proxy: " + err.Error())
 			return c, err
 		}
 	} else {
 		if _, err := c.Engine.Conn(); err != nil {
-			c.log.Warn().Msg("Erro ao conectar com o proxy rtpengine " + err.Error())
+			c.log.Warn().Msg("Error connecting to RTP engine proxy: " + err.Error())
 			return c, err
 		}
 	}
+
 	c.log = c.log.Level(zerolog.InfoLevel)
 	return c, nil
 }
 
-// WithClientPort Permite definir a porta padrão do client
+// WithClientPort allows setting a custom default port for the Client.
+// It returns a ClientOption function that updates both the Client's port
+// and the associated Engine's port.
+//
+// Parameters:
+//   - port: The port number to be set.
+//
+// Returns:
+//   - ClientOption: A function that applies the port configuration to the Client.
 func WithClientPort(port int) ClientOption {
 	return func(s *Client) error {
 		s.port = port
@@ -62,19 +87,34 @@ func WithClientPort(port int) ClientOption {
 	}
 }
 
-// WithClientHostname Permite definir o nome do host padrão do client resolve o endereço ipv4 da maquina local.
+// WithClientHostname sets the default hostname for the Client and resolves its IPv4 address.
+// It returns a ClientOption function that updates the Client's IP field based on the resolved address.
+//
+// Parameters:
+//   - hostname: The hostname to resolve (e.g., "localhost", "example.com").
+//
+// Returns:
+//   - ClientOption: A function that applies the hostname resolution to the Client.
 func WithClientHostname(hostname string) ClientOption {
 	return func(s *Client) error {
 		lookup, err := net.ResolveIPAddr("ip4", hostname)
 		if err != nil {
-			s.log.Warn().Msg("Erro resolver name")
+			s.log.Warn().Msg("Error resolving hostname")
 		}
 		s.ip = lookup.IP
 		return nil
 	}
 }
 
-// WithClientDns Permite definir o dns do serviço do rtpengine a função resolve o ip do serviço.
+// WithClientDns sets the DNS resolver for the RTP engine service and resolves its IP address.
+// It returns a ClientOption function that configures a custom DNS resolver using Google's public DNS (8.8.8.8),
+// performs an IPv4 lookup for the specified domain, and updates the Client's URL with the resolved IP.
+//
+// Parameters:
+//   - dns: The domain name of the RTP engine service to resolve.
+//
+// Returns:
+//   - ClientOption: A function that applies the DNS resolution and updates the Client's URL.
 func WithClientDns(dns string) ClientOption {
 	return func(s *Client) error {
 		domain := &net.Resolver{
@@ -93,7 +133,15 @@ func WithClientDns(dns string) ClientOption {
 	}
 }
 
-// WithClientPort Permite definir o IP padrão do client
+// WithClientIP sets the default IP address for the Client.
+// It returns a ClientOption function that parses the provided IP string
+// and assigns it to the Client's IP field.
+//
+// Parameters:
+//   - host: A string representing the IP address to be used.
+//
+// Returns:
+//   - ClientOption: A function that applies the IP configuration to the Client.
 func WithClientIP(host string) ClientOption {
 	return func(s *Client) error {
 		s.ip = net.ParseIP(host)
@@ -101,7 +149,15 @@ func WithClientIP(host string) ClientOption {
 	}
 }
 
-// WithClientPort Permite definir o protocolo padrão do client
+// WithClientProto sets the default protocol for the Client.
+// It returns a ClientOption function that assigns the specified protocol string
+// to the Client's proto field.
+//
+// Parameters:
+//   - proto: A string representing the desired protocol (e.g., "udp", "tcp").
+//
+// Returns:
+//   - ClientOption: A function that applies the protocol configuration to the Client.
 func WithClientProto(proto string) ClientOption {
 	return func(s *Client) error {
 		s.proto = proto
@@ -109,7 +165,15 @@ func WithClientProto(proto string) ClientOption {
 	}
 }
 
-// WithClientTimeout Permite definir o tempo  de timeout da conexão do client
+// WithClientTimeout sets the connection timeout duration for the Client.
+// It returns a ClientOption function that converts the provided integer value
+// into a time.Duration and assigns it to the Client's timeout field.
+//
+// Parameters:
+//   - t: Timeout value in milliseconds.
+//
+// Returns:
+//   - ClientOption: A function that applies the timeout configuration to the Client.
 func WithClientTimeout(t int) ClientOption {
 	return func(s *Client) error {
 		s.timeout = time.Duration(time.Duration(t).Milliseconds())
@@ -117,11 +181,23 @@ func WithClientTimeout(t int) ClientOption {
 	}
 }
 
+// SetLogLevel updates the logging level of the Client's logger.
+// This method allows dynamic adjustment of the verbosity of log output
+// based on the provided level.
+//
+// Parameters:
+//   - level: An int8 value representing the desired logging level.
+//     Valid levels are defined by zerolog.Level (e.g., DebugLevel, InfoLevel, WarnLevel, ErrorLevel).
 func (s *Client) SetLogLevel(level int8) {
 	s.log.Level(zerolog.Level(level))
 }
 
-// Fechar conexão aberta.
+// Close terminates the active connection held by the Client.
+// If a UDP connection is active, it closes that connection.
+// Otherwise, it closes the standard connection.
+//
+// Returns:
+//   - error: Any error encountered while closing the connection.
 func (s *Client) Close() error {
 	if s.conUDP != nil {
 		return s.conUDP.Close()
@@ -130,6 +206,16 @@ func (s *Client) Close() error {
 	}
 }
 
+// NewComando sends a command to the RTP engine and retrieves the corresponding response.
+// It generates a unique cookie, sends the command using ComandoNG, and then attempts to read the response using RespostaNG.
+//
+// Parameters:
+//   - comando: A pointer to a RequestRtp struct containing the command to be sent.
+//
+// Returns:
+//   - *ResponseRtp: A pointer to the response received from the RTP engine.
+//     If an error occurs during command execution or response retrieval,
+//     an empty ResponseRtp instance is returned.
 func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 	cookie := c.GetCookie()
 	resposta := &ResponseRtp{}
@@ -148,7 +234,16 @@ func (c *Client) NewComando(comando *RequestRtp) *ResponseRtp {
 	return resposta
 }
 
-// Comando NG formatado em bencode para rtpengine
+// ComandoNG sends a command to the RTP engine formatted in bencode.
+// It encodes the command along with a unique cookie, logs the operation,
+// and writes the message to the appropriate connection (UDP or TCP).
+//
+// Parameters:
+//   - cookie: A unique identifier used to correlate the command and its response.
+//   - comando: A pointer to a RequestRtp struct containing the command details.
+//
+// Returns:
+//   - error: An error if encoding fails or if the message cannot be sent over the network.
 func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 	menssagem, err := EncodeComando(cookie, comando)
 	if err != nil {
@@ -156,6 +251,7 @@ func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 	}
 
 	c.log.Debug().Msg("cookie: " + cookie + " Comando: " + comando.Command)
+
 	if c.conUDP != nil {
 		if _, err := c.conUDP.Write(menssagem); err != nil {
 			return err
@@ -169,11 +265,21 @@ func (c *Client) ComandoNG(cookie string, comando *RequestRtp) error {
 	return nil
 }
 
-// Resposta do servidor ngcp-rtpengine
+// RespostaNG receives and decodes the response from the ngcp-rtpengine server.
+// It reads raw data from the active connection (UDP or TCP), waits briefly to ensure the response is ready,
+// and then decodes the response using the provided cookie.
+//
+// Parameters:
+//   - cookie: A unique identifier used to match the response with the original command.
+//
+// Returns:
+//   - *ResponseRtp: A pointer to the decoded response object.
+//   - error: An error if reading from the connection fails.
 func (c *Client) RespostaNG(cookie string) (*ResponseRtp, error) {
 	respostaRaw := make([]byte, 65536)
 	var err error
 	resposta := &ResponseRtp{}
+
 	if c.conUDP != nil {
 		time.Sleep(1 * time.Second)
 		_, err = c.conUDP.Read(respostaRaw)
