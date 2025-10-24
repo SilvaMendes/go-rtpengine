@@ -235,6 +235,9 @@ type ParamsOptString struct {
 //	PtimeReverse     int - Reverse packetization time (ms).
 //	DbId             int - Database identifier.
 //	Duration         int - Session duration (seconds).
+//	RepeatTimes      int - Repeat times duration (seconds).
+//	RepeatDuration   int - Repeat durations (seconds).
+//	StartPos         int - Start position (seconds).
 type ParamsOptInt struct {
 	TOS              int `json:"TOS,omitempty" bencode:"TOS,omitempty"`
 	DeleteDelay      int `json:"delete-delay,omitempty" bencode:"delete-delay,omitempty"`
@@ -247,6 +250,9 @@ type ParamsOptInt struct {
 	PtimeReverse     int `json:"ptime-reverse,omitempty" bencode:"ptime-reverse,omitempty"`
 	DbId             int `json:"db-id,omitempty" bencode:"db-id,omitempty"`
 	Duration         int `json:"duration,omitempty" bencode:"duration,omitempty"`
+	RepeatTimes      int `json:"repeat-times,omitempty" bencode:"repeat-times,omitempty"`
+	RepeatDuration   int `json:"repeat-duration,omitempty" bencode:"repeat-duration,omitempty"`
+	StartPos         int `json:"start-pos,omitempty" bencode:"rstart-pos,omitempty"`
 }
 
 // ParamsOptStringArray defines a set of array-based parameters for RTP engine operations.
